@@ -14,8 +14,11 @@ maskImageConv = np.array(maskImage)
 cv2.imwrite('./01_mask.png', maskImageConv)
 
 croppedImage = VisionPNP.cropImageToMask(rawImage, maskImageConv)
-croppedImageConv = np.array(croppedImage, copy=False)
+croppedImageConv = np.array(croppedImage)
 cv2.imwrite('./02_cropped.png', croppedImageConv)
+
+position = VisionPNP.findShape(croppedImageConv)
+print(position)
 
 # maskValues = VisionPNP.getHSVColorRange('./images/gripper.png')
 # print(maskValues)

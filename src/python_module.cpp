@@ -101,28 +101,24 @@ string type2str(int type) {
 
 //----------------------------------------------------------<
 // numpy array to Mat converter
-static Mat numpyToMat(py::array xs) {
-  py::buffer_info info = xs.request();
+static Mat numpyToMat(py::array input) {
+  py::buffer_info info = input.request();
   unsigned int width = info.shape[0];
   unsigned int height = info.shape[1];
   auto ptr = static_cast<unsigned char *>(info.ptr);
   int type = 0;
   switch(info.shape[2]) {
     case 1: type = CV_8UC1;
-      cout << "One channel" << endl;
       break;
     case 2: type = CV_8UC2;
-      cout << "Two channels" << endl;
       break;
     case 3: type = CV_8UC3;
-      cout << "Three channels" << endl;
       break;
     default: type = CV_8UC1;
   }
 
   Mat img(Size(width, height), type, ptr, Mat::AUTO_STEP);
-  Mat image = img.clone(); // workaround for correct image convertion
-  return image;
+  return img;
 }
 
 //----------------------------------------------------------<
@@ -143,6 +139,15 @@ static Mat pyCreateColorRangeMask(const py::array& image, const vector <vector<i
   return Image::createColorRangeMask(matImage, colorRange);
 }
 
+static vector<int> pyFindShape(const py::array& image) {
+  Mat matImage = numpyToMat(image);
+  return Image::findShape(matImage);
+}
+
+static vector<int> pyFindShape(const string& imagePath) {
+  return Image::findShape(imagePath);
+}
+
 //----------------------------------------------------------<
 // Python module definition
 PYBIND11_MODULE(VisionPNP, m){
@@ -154,15 +159,15 @@ PYBIND11_MODULE(VisionPNP, m){
     "Returns lower and upper color ranges from provided background picture.",
     py::arg("imagePath"));
 
-  m.def("matchTemplate", &Image::matchTemplate,
-    "Detects and retrieves most likely candidate of provided template in search image.",
-    py::arg("pathToSearchImage"),
-    py::arg("pathToTemplateImage"),
-    py::arg("colorRange"));
+  // m.def("matchTemplate", &Image::matchTemplate,
+  //   "Detects and retrieves most likely candidate of provided template in search image.",
+  //   py::arg("pathToSearchImage"),
+  //   py::arg("pathToTemplateImage"),
+  //   py::arg("colorRange"));
 
-  m.def("findShape", &Image::findShape,
-    "Detects arbitrary shape in provided search image.",
-    py::arg("pathToImage"));
+  m.def("findShape", py::overload_cast<const py::array&>(&pyFindShape), "Detects arbitrary shape in provided search image.", py::arg("image"));
+
+  m.def("findShape", py::overload_cast<const string&>(&pyFindShape), "Detects arbitrary shape in provided search image.", py::arg("imagePath"));
 
   m.def("removeColorRange", &pyRemoveColorRange,
     "Removes provided HSV color range from picture",

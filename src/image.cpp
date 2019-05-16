@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------<
 // Match template in image and return rotation
-float Image::_matchTemplate(const Mat& inputImage,const Mat& templateImage, const vector <vector<int>>& colorRange) {
+float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const vector <vector<int>>& colorRange) {
   bool DEBUG = false;
   vector<Vec4f> detected;
   TickMeter tm;
@@ -86,29 +86,20 @@ float Image::matchTemplate(const string& pathToSearchImage, const string& pathTo
   Mat sourceImage = imread(pathToSearchImage);
   Mat templateImage = imread(pathToTemplateImage, IMREAD_GRAYSCALE);
 
-  return _matchTemplate(sourceImage, templateImage, colorRange);
+  return matchTemplate(sourceImage, templateImage, colorRange);
 }
 
 //--------------------------------------------------------<
 // Find shape in image and return position
-vector<int> Image::_findShape(const Mat& image) {
-  Mat mask, croppedImage, grayImage, blurImage, thresholdImage, kernel, openImage, closedImage, cannyImage;
+vector<int> Image::findShape(const Mat& image) {
+  Mat grayImage, blurImage, thresholdImage, kernel, openImage, closedImage, cannyImage;
   vector<vector<Point>> contours;
   vector <Point> hull;
   vector<Vec4i> hierarchy;
   vector<int> center;
-  vector <vector<int>> colorRange;
-
-  // Use predefined green color range to crop the green border
-  colorRange.push_back(vector<int> {30, 45, 45});
-  colorRange.push_back(vector<int> {90, 255, 255});
-
-  // Masking and cropping
-  mask = createColorRangeMask(image, colorRange);
-  croppedImage = cropImageToMask(image, mask);
 
   // Create threshold image
-  cvtColor(croppedImage, grayImage, COLOR_BGR2GRAY);
+  cvtColor(image, grayImage, COLOR_BGR2GRAY);
   blur(grayImage, blurImage, Size(5, 5));
   threshold(blurImage, thresholdImage, 0, 255, THRESH_BINARY | THRESH_OTSU);
 
@@ -136,7 +127,7 @@ vector<int> Image::_findShape(const Mat& image) {
 
 vector<int> Image::findShape(const string& pathToImage) {
   const Mat image = imread(pathToImage);
-  return _findShape(image);
+  return findShape(image);
 }
 
 //--------------------------------------------------------<
@@ -195,30 +186,18 @@ Mat Image::cropImageToMask(const Mat& image, const Mat& mask) {
   sort(contours.begin(), contours.end(), compareContourAreas);
   cnt = contours[contours.size()-1];
 
-  vector<vector<Point> > contours_poly( contours.size() );
-  vector<Rect> boundRect( contours.size() );
-  vector<Point2f>center( contours.size() );
-  vector<float>radius( contours.size() );
+  vector<Point> contours_poly;
+  Rect boundRect;
 
-  for( long unsigned int i = 0; i < contours.size(); i++ )
-     { approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
-       boundRect[i] = boundingRect( Mat(contours_poly[i]) );
-       minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
-     }
+  boundRect = boundingRect( Mat(cnt) );
 
+  /// Draw bonding rect
+  // Mat drawing = image.clone();
+  // Scalar color = Scalar(0, 0, 255);
+  // rectangle( drawing, boundRect.tl(), boundRect.br(), color, 2, 8, 0 );
+  // imwrite("output_cropped.png", image(boundRect));
 
-  /// Draw polygonal contour + bonding rects + circles
-  Mat drawing = image.clone();
-  for( long unsigned int i = 0; i< contours.size(); i++ )
-     {
-       Scalar color = Scalar( 255, 0,0 );
-       drawContours( drawing, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
-       rectangle( drawing, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0 );
-       circle( drawing, center[i], (int)radius[i], color, 2, 8, 0 );
-     }
-  imwrite("output_cropped.png", drawing);
-
-  return image(bRect);
+  return image(boundRect).clone();
 }
 
 // Sort contours by size

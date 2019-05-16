@@ -1,0 +1,351 @@
+2019-05-14T11:48:28 DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7.
+2019-05-14T11:48:28 Created temporary directory: /tmp/pip-ephem-wheel-cache-Q4PKTD
+2019-05-14T11:48:28 Created temporary directory: /tmp/pip-req-tracker-R2Ox2I
+2019-05-14T11:48:28 Created requirements tracker '/tmp/pip-req-tracker-R2Ox2I'
+2019-05-14T11:48:28 Created temporary directory: /tmp/pip-install-3NK5U7
+2019-05-14T11:48:28 Obtaining file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T11:48:28   Added file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline to build tracker '/tmp/pip-req-tracker-R2Ox2I'
+2019-05-14T11:48:28     Running setup.py (path:/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py) egg_info for package from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T11:48:28     Running command python setup.py egg_info
+2019-05-14T11:48:29     running egg_info
+2019-05-14T11:48:29     creating VisionPNP27.egg-info
+2019-05-14T11:48:29     writing requirements to VisionPNP27.egg-info/requires.txt
+2019-05-14T11:48:29     writing VisionPNP27.egg-info/PKG-INFO
+2019-05-14T11:48:29     writing top-level names to VisionPNP27.egg-info/top_level.txt
+2019-05-14T11:48:29     writing dependency_links to VisionPNP27.egg-info/dependency_links.txt
+2019-05-14T11:48:29     writing manifest file 'VisionPNP27.egg-info/SOURCES.txt'
+2019-05-14T11:48:29     reading manifest file 'VisionPNP27.egg-info/SOURCES.txt'
+2019-05-14T11:48:29     writing manifest file 'VisionPNP27.egg-info/SOURCES.txt'
+2019-05-14T11:48:29   Source in /home/felix/dev/thesis/thesisba/cv-scripts/pipeline has version 1.0, which satisfies requirement VisionPNP27==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T11:48:29   Removed VisionPNP27==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline from build tracker '/tmp/pip-req-tracker-R2Ox2I'
+2019-05-14T11:48:29 Requirement already satisfied: pybind11 in /home/felix/.local/lib/python2.7/site-packages (from VisionPNP27==1.0) (2.2.4)
+2019-05-14T11:48:29 Installing collected packages: VisionPNP27
+2019-05-14T11:48:29   Found existing installation: VisionPNP27 1.0
+2019-05-14T11:48:29     Uninstalling VisionPNP27-1.0:
+2019-05-14T11:48:29       Created temporary directory: /tmp/pip-uninstall-aUVqUL
+2019-05-14T11:48:29       Removing file or directory /home/felix/.local/lib/python2.7/site-packages/VisionPNP27.egg-link
+2019-05-14T11:48:29       Removing pth entries from /home/felix/.local/lib/python2.7/site-packages/easy-install.pth:
+2019-05-14T11:48:29       Removing entry: /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T11:48:29       Successfully uninstalled VisionPNP27-1.0
+2019-05-14T11:48:29   Running setup.py develop for VisionPNP27
+2019-05-14T11:48:29     Running command /usr/bin/python -c 'import setuptools, tokenize;__file__='"'"'/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' develop --no-deps --user --prefix=
+2019-05-14T11:48:29     running develop
+2019-05-14T11:48:29     running egg_info
+2019-05-14T11:48:29     writing requirements to VisionPNP27.egg-info/requires.txt
+2019-05-14T11:48:29     writing VisionPNP27.egg-info/PKG-INFO
+2019-05-14T11:48:29     writing top-level names to VisionPNP27.egg-info/top_level.txt
+2019-05-14T11:48:29     writing dependency_links to VisionPNP27.egg-info/dependency_links.txt
+2019-05-14T11:48:29     reading manifest file 'VisionPNP27.egg-info/SOURCES.txt'
+2019-05-14T11:48:29     writing manifest file 'VisionPNP27.egg-info/SOURCES.txt'
+2019-05-14T11:48:29     running build_ext
+2019-05-14T11:48:29     building 'VisionPNP27' extension
+2019-05-14T11:48:29     creating build
+2019-05-14T11:48:29     creating build/temp.linux-x86_64-2.7
+2019-05-14T11:48:29     creating build/temp.linux-x86_64-2.7/src
+2019-05-14T11:48:29     gcc -pthread -fno-strict-aliasing -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -fPIC -I/usr/local/include/pybind11 -I/usr/local/include/opencv4 -I./src -I/usr/include/python2.7 -c ./src/color.cpp -o build/temp.linux-x86_64-2.7/./src/color.o -std=c++11 -fPIC -DPYBIND11_PYTHON_VERSION=2.7
+2019-05-14T11:48:31     ./src/color.cpp: In static member function ‘static cv::Mat Color::readColors(const cv::Mat&)’:
+2019-05-14T11:48:31     ./src/color.cpp:28:10: warning: unused variable ‘min’ [-Wunused-variable]
+2019-05-14T11:48:31        double min = 180;
+2019-05-14T11:48:31               ^~~
+2019-05-14T11:48:31     ./src/color.cpp:29:10: warning: unused variable ‘max’ [-Wunused-variable]
+2019-05-14T11:48:31        double max = 0;
+2019-05-14T11:48:31               ^~~
+2019-05-14T11:48:31     creating build/lib.linux-x86_64-2.7
+2019-05-14T11:48:31     g++ -pthread -shared -Wl,-z,relro -specs=/usr/lib/rpm/redhat/redhat-hardened-ld build/temp.linux-x86_64-2.7/./src/color.o -L/usr/local/lib64 -L/usr/lib64 -lopencv_core -lopencv_highgui -lpython2.7 -o build/lib.linux-x86_64-2.7/VisionPNP27.so
+2019-05-14T11:48:31     copying build/lib.linux-x86_64-2.7/VisionPNP27.so ->
+2019-05-14T11:48:31     Creating /home/felix/.local/lib/python2.7/site-packages/VisionPNP27.egg-link (link to .)
+2019-05-14T11:48:31     Adding VisionPNP27 1.0 to easy-install.pth file
+
+2019-05-14T11:48:31     Installed /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T11:48:31 Successfully installed VisionPNP27
+2019-05-14T11:48:31 Cleaning up...
+2019-05-14T11:48:31 Removed build tracker '/tmp/pip-req-tracker-R2Ox2I'
+2019-05-14T11:52:30 DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7.
+2019-05-14T11:52:30 Created temporary directory: /tmp/pip-ephem-wheel-cache-orzE8Z
+2019-05-14T11:52:30 Created temporary directory: /tmp/pip-req-tracker-2ACV0s
+2019-05-14T11:52:30 Created requirements tracker '/tmp/pip-req-tracker-2ACV0s'
+2019-05-14T11:52:30 Created temporary directory: /tmp/pip-install-n50jWN
+2019-05-14T11:52:30 Obtaining file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T11:52:30   Added file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline to build tracker '/tmp/pip-req-tracker-2ACV0s'
+2019-05-14T11:52:30     Running setup.py (path:/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py) egg_info for package from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T11:52:30     Running command python setup.py egg_info
+2019-05-14T11:52:30     running egg_info
+2019-05-14T11:52:30     writing requirements to VisionPNP27.egg-info/requires.txt
+2019-05-14T11:52:30     writing VisionPNP27.egg-info/PKG-INFO
+2019-05-14T11:52:30     writing top-level names to VisionPNP27.egg-info/top_level.txt
+2019-05-14T11:52:30     writing dependency_links to VisionPNP27.egg-info/dependency_links.txt
+2019-05-14T11:52:30     reading manifest file 'VisionPNP27.egg-info/SOURCES.txt'
+2019-05-14T11:52:30     writing manifest file 'VisionPNP27.egg-info/SOURCES.txt'
+2019-05-14T11:52:30   Source in /home/felix/dev/thesis/thesisba/cv-scripts/pipeline has version 1.0, which satisfies requirement VisionPNP27==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T11:52:30   Removed VisionPNP27==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline from build tracker '/tmp/pip-req-tracker-2ACV0s'
+2019-05-14T11:52:30 Requirement already satisfied: pybind11 in /home/felix/.local/lib/python2.7/site-packages (from VisionPNP27==1.0) (2.2.4)
+2019-05-14T11:52:30 Installing collected packages: VisionPNP27
+2019-05-14T11:52:30   Found existing installation: VisionPNP27 1.0
+2019-05-14T11:52:30     Uninstalling VisionPNP27-1.0:
+2019-05-14T11:52:30       Created temporary directory: /tmp/pip-uninstall-R4x2JJ
+2019-05-14T11:52:30       Removing file or directory /home/felix/.local/lib/python2.7/site-packages/VisionPNP27.egg-link
+2019-05-14T11:52:30       Removing pth entries from /home/felix/.local/lib/python2.7/site-packages/easy-install.pth:
+2019-05-14T11:52:30       Removing entry: /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T11:52:30       Successfully uninstalled VisionPNP27-1.0
+2019-05-14T11:52:30   Running setup.py develop for VisionPNP27
+2019-05-14T11:52:30     Running command /usr/bin/python -c 'import setuptools, tokenize;__file__='"'"'/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' develop --no-deps --user --prefix=
+2019-05-14T11:52:30     running develop
+2019-05-14T11:52:30     running egg_info
+2019-05-14T11:52:30     writing requirements to VisionPNP27.egg-info/requires.txt
+2019-05-14T11:52:30     writing VisionPNP27.egg-info/PKG-INFO
+2019-05-14T11:52:30     writing top-level names to VisionPNP27.egg-info/top_level.txt
+2019-05-14T11:52:30     writing dependency_links to VisionPNP27.egg-info/dependency_links.txt
+2019-05-14T11:52:30     reading manifest file 'VisionPNP27.egg-info/SOURCES.txt'
+2019-05-14T11:52:30     writing manifest file 'VisionPNP27.egg-info/SOURCES.txt'
+2019-05-14T11:52:30     running build_ext
+2019-05-14T11:52:30     copying build/lib.linux-x86_64-2.7/VisionPNP27.so ->
+2019-05-14T11:52:30     Creating /home/felix/.local/lib/python2.7/site-packages/VisionPNP27.egg-link (link to .)
+2019-05-14T11:52:30     Adding VisionPNP27 1.0 to easy-install.pth file
+
+2019-05-14T11:52:30     Installed /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T11:52:30 Successfully installed VisionPNP27
+2019-05-14T11:52:30 Cleaning up...
+2019-05-14T11:52:30 Removed build tracker '/tmp/pip-req-tracker-2ACV0s'
+2019-05-14T12:29:09 DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7.
+2019-05-14T12:29:09 Created temporary directory: /tmp/pip-ephem-wheel-cache-1Aybyx
+2019-05-14T12:29:09 Created temporary directory: /tmp/pip-req-tracker-AGb7Cj
+2019-05-14T12:29:09 Created requirements tracker '/tmp/pip-req-tracker-AGb7Cj'
+2019-05-14T12:29:09 Created temporary directory: /tmp/pip-install-0A7zCO
+2019-05-14T12:29:09 Obtaining file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:29:09   Added file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline to build tracker '/tmp/pip-req-tracker-AGb7Cj'
+2019-05-14T12:29:09     Running setup.py (path:/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py) egg_info for package from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:29:09     Running command python setup.py egg_info
+2019-05-14T12:29:09     running egg_info
+2019-05-14T12:29:09     writing requirements to VisionPNP.egg-info/requires.txt
+2019-05-14T12:29:09     writing VisionPNP.egg-info/PKG-INFO
+2019-05-14T12:29:09     writing top-level names to VisionPNP.egg-info/top_level.txt
+2019-05-14T12:29:09     writing dependency_links to VisionPNP.egg-info/dependency_links.txt
+2019-05-14T12:29:09     reading manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:29:09     writing manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:29:09   Source in /home/felix/dev/thesis/thesisba/cv-scripts/pipeline has version 1.0, which satisfies requirement VisionPNP==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:29:09   Removed VisionPNP==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline from build tracker '/tmp/pip-req-tracker-AGb7Cj'
+2019-05-14T12:29:09 Requirement already satisfied: pybind11 in /usr/local/lib/python3.6/site-packages (from VisionPNP==1.0) (2.2.4)
+2019-05-14T12:29:09 Installing collected packages: VisionPNP
+2019-05-14T12:29:09   Found existing installation: VisionPNP 1.0
+2019-05-14T12:29:09     Uninstalling VisionPNP-1.0:
+2019-05-14T12:29:09       Created temporary directory: /tmp/pip-uninstall-zsIQ3n
+2019-05-14T12:29:09       Removing file or directory /home/felix/.local/lib/python2.7/site-packages/VisionPNP.egg-link
+2019-05-14T12:29:09       Removing pth entries from /home/felix/.local/lib/python2.7/site-packages/easy-install.pth:
+2019-05-14T12:29:09       Removing entry: /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:29:09       Successfully uninstalled VisionPNP-1.0
+2019-05-14T12:29:09   Running setup.py develop for VisionPNP
+2019-05-14T12:29:09     Running command /usr/bin/python -c 'import setuptools, tokenize;__file__='"'"'/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' develop --no-deps --user --prefix=
+2019-05-14T12:29:10     running develop
+2019-05-14T12:29:10     running egg_info
+2019-05-14T12:29:10     writing requirements to VisionPNP.egg-info/requires.txt
+2019-05-14T12:29:10     writing VisionPNP.egg-info/PKG-INFO
+2019-05-14T12:29:10     writing top-level names to VisionPNP.egg-info/top_level.txt
+2019-05-14T12:29:10     writing dependency_links to VisionPNP.egg-info/dependency_links.txt
+2019-05-14T12:29:10     reading manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:29:10     writing manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:29:10     running build_ext
+2019-05-14T12:29:10     building 'VisionPNP' extension
+2019-05-14T12:29:10     gcc -pthread -fno-strict-aliasing -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -fPIC -I/usr/local/include/pybind11 -I/usr/local/include/opencv4 -I./src -I/usr/include/python2.7 -c ./src/python_module.cpp -o build/temp.linux-x86_64-2.7/./src/python_module.o -std=c++11 -fPIC
+2019-05-14T12:29:13     In file included from ./src/python_module.cpp:1:0:
+2019-05-14T12:29:13     /usr/local/include/pybind11/pybind11.h: In instantiation of ‘void pybind11::cpp_function::initialize(Func&&, Return (*)(Args ...), const Extra& ...) [with Func = float (*&)(const std::__cxx11::basic_string<char>&, const std::__cxx11::basic_string<char>&, const std::vector<std::vector<int> >&); Return = float; Args = {const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, const std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&}; Extra = {pybind11::name, pybind11::scope, pybind11::sibling, char [71], pybind11::arg, pybind11::arg}]’:
+2019-05-14T12:29:13     /usr/local/include/pybind11/pybind11.h:58:9:   required from ‘pybind11::cpp_function::cpp_function(Return (*)(Args ...), const Extra& ...) [with Return = float; Args = {const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, const std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&}; Extra = {pybind11::name, pybind11::scope, pybind11::sibling, char [71], pybind11::arg, pybind11::arg}]’
+2019-05-14T12:29:13     /usr/local/include/pybind11/pybind11.h:813:22:   required from ‘pybind11::module& pybind11::module::def(const char*, Func&&, const Extra& ...) [with Func = float (*)(const std::__cxx11::basic_string<char>&, const std::__cxx11::basic_string<char>&, const std::vector<std::vector<int> >&); Extra = {char [71], pybind11::arg, pybind11::arg}]’
+2019-05-14T12:29:13     ./src/python_module.cpp:17:41:   required from here
+2019-05-14T12:29:13     /usr/local/include/pybind11/pybind11.h:128:9: error: static assertion failed: The number of argument annotations does not match the number of function arguments
+2019-05-14T12:29:13              static_assert(expected_num_args<Extra...>(sizeof...(Args), cast_in::has_args, cast_in::has_kwargs),
+2019-05-14T12:29:13              ^~~~~~~~~~~~~
+2019-05-14T12:29:13     /usr/local/include/pybind11/pybind11.h:132:19: error: cannot convert ‘pybind11::cpp_function::initialize(Func&&, Return (*)(Args ...), const Extra& ...) [with Func = float (*&)(const std::__cxx11::basic_string<char>&, const std::__cxx11::basic_string<char>&, const std::vector<std::vector<int> >&); Return = float; Args = {const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, const std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, const std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&}; Extra = {pybind11::name, pybind11::scope, pybind11::sibling, char [71], pybind11::arg, pybind11::arg}]::<lambda(pybind11::detail::function_call&)>’ to ‘pybind11::handle (*)(pybind11::detail::function_call&)’ in assignment
+2019-05-14T12:29:13              rec->impl = [](function_call &call) -> handle {
+2019-05-14T12:29:13     error: command 'gcc' failed with exit status 1
+2019-05-14T12:29:13   Rolling back uninstall of VisionPNP
+2019-05-14T12:29:13   Moving to /home/felix/.local/lib/python2.7/site-packages/VisionPNP.egg-link
+2019-05-14T12:29:13    from /tmp/pip-uninstall-zsIQ3n/VisionPNP.egg-link
+2019-05-14T12:29:13   Replacing /home/felix/.local/lib/python2.7/site-packages/VisionPNP.egg-link from /tmp/pip-uninstall-zsIQ3n/VisionPNP.egg-link
+2019-05-14T12:29:13   Rolling /home/felix/.local/lib/python2.7/site-packages/easy-install.pth back to previous state
+2019-05-14T12:29:13 Cleaning up...
+2019-05-14T12:29:13 Removed build tracker '/tmp/pip-req-tracker-AGb7Cj'
+2019-05-14T12:29:13 ERROR: Command "/usr/bin/python -c 'import setuptools, tokenize;__file__='"'"'/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' develop --no-deps --user --prefix=" failed with error code 1 in /home/felix/dev/thesis/thesisba/cv-scripts/pipeline/
+2019-05-14T12:29:13 Exception information:
+2019-05-14T12:29:13 Traceback (most recent call last):
+2019-05-14T12:29:13   File "/usr/local/lib/python3.6/site-packages/pip/_internal/cli/base_command.py", line 178, in main
+2019-05-14T12:29:13     status = self.run(options, args)
+2019-05-14T12:29:13   File "/usr/local/lib/python3.6/site-packages/pip/_internal/commands/install.py", line 414, in run
+2019-05-14T12:29:13     use_user_site=options.use_user_site,
+2019-05-14T12:29:13   File "/usr/local/lib/python3.6/site-packages/pip/_internal/req/__init__.py", line 58, in install_given_reqs
+2019-05-14T12:29:13     **kwargs
+2019-05-14T12:29:13   File "/usr/local/lib/python3.6/site-packages/pip/_internal/req/req_install.py", line 910, in install
+2019-05-14T12:29:13     install_options, global_options, prefix=prefix,
+2019-05-14T12:29:13   File "/usr/local/lib/python3.6/site-packages/pip/_internal/req/req_install.py", line 766, in install_editable
+2019-05-14T12:29:13     cwd=self.setup_py_dir,
+2019-05-14T12:29:13   File "/usr/local/lib/python3.6/site-packages/pip/_internal/utils/misc.py", line 776, in call_subprocess
+2019-05-14T12:29:13     % (command_desc, proc.returncode, cwd))
+2019-05-14T12:29:13 InstallationError: Command "/usr/bin/python -c 'import setuptools, tokenize;__file__='"'"'/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' develop --no-deps --user --prefix=" failed with error code 1 in /home/felix/dev/thesis/thesisba/cv-scripts/pipeline/
+2019-05-14T12:30:47 DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7.
+2019-05-14T12:30:47 Created temporary directory: /tmp/pip-ephem-wheel-cache-21F4TB
+2019-05-14T12:30:47 Created temporary directory: /tmp/pip-req-tracker-68atRy
+2019-05-14T12:30:47 Created requirements tracker '/tmp/pip-req-tracker-68atRy'
+2019-05-14T12:30:47 Created temporary directory: /tmp/pip-install-PWJca1
+2019-05-14T12:30:47 Obtaining file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:30:47   Added file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline to build tracker '/tmp/pip-req-tracker-68atRy'
+2019-05-14T12:30:47     Running setup.py (path:/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py) egg_info for package from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:30:47     Running command python setup.py egg_info
+2019-05-14T12:30:47     running egg_info
+2019-05-14T12:30:47     writing requirements to VisionPNP.egg-info/requires.txt
+2019-05-14T12:30:47     writing VisionPNP.egg-info/PKG-INFO
+2019-05-14T12:30:47     writing top-level names to VisionPNP.egg-info/top_level.txt
+2019-05-14T12:30:47     writing dependency_links to VisionPNP.egg-info/dependency_links.txt
+2019-05-14T12:30:47     reading manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:30:47     writing manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:30:47   Source in /home/felix/dev/thesis/thesisba/cv-scripts/pipeline has version 1.0, which satisfies requirement VisionPNP==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:30:47   Removed VisionPNP==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline from build tracker '/tmp/pip-req-tracker-68atRy'
+2019-05-14T12:30:47 Requirement already satisfied: pybind11 in /usr/local/lib/python3.6/site-packages (from VisionPNP==1.0) (2.2.4)
+2019-05-14T12:30:47 Installing collected packages: VisionPNP
+2019-05-14T12:30:47   Found existing installation: VisionPNP 1.0
+2019-05-14T12:30:47     Uninstalling VisionPNP-1.0:
+2019-05-14T12:30:47       Created temporary directory: /tmp/pip-uninstall-tQexpH
+2019-05-14T12:30:47       Removing file or directory /home/felix/.local/lib/python2.7/site-packages/VisionPNP.egg-link
+2019-05-14T12:30:47       Removing pth entries from /home/felix/.local/lib/python2.7/site-packages/easy-install.pth:
+2019-05-14T12:30:47       Removing entry: /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:30:47       Successfully uninstalled VisionPNP-1.0
+2019-05-14T12:30:47   Running setup.py develop for VisionPNP
+2019-05-14T12:30:47     Running command /usr/bin/python -c 'import setuptools, tokenize;__file__='"'"'/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' develop --no-deps --user --prefix=
+2019-05-14T12:30:47     running develop
+2019-05-14T12:30:47     running egg_info
+2019-05-14T12:30:47     writing requirements to VisionPNP.egg-info/requires.txt
+2019-05-14T12:30:47     writing VisionPNP.egg-info/PKG-INFO
+2019-05-14T12:30:47     writing top-level names to VisionPNP.egg-info/top_level.txt
+2019-05-14T12:30:47     writing dependency_links to VisionPNP.egg-info/dependency_links.txt
+2019-05-14T12:30:47     reading manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:30:47     writing manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:30:47     running build_ext
+2019-05-14T12:30:47     building 'VisionPNP' extension
+2019-05-14T12:30:47     gcc -pthread -fno-strict-aliasing -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -fPIC -I/usr/local/include/pybind11 -I/usr/local/include/opencv4 -I./src -I/usr/include/python2.7 -c ./src/python_module.cpp -o build/temp.linux-x86_64-2.7/./src/python_module.o -std=c++11 -fPIC
+2019-05-14T12:30:53     gcc -pthread -fno-strict-aliasing -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -fPIC -I/usr/local/include/pybind11 -I/usr/local/include/opencv4 -I./src -I/usr/include/python2.7 -c ./src/color.cpp -o build/temp.linux-x86_64-2.7/./src/color.o -std=c++11 -fPIC
+2019-05-14T12:30:53     ./src/color.cpp: In static member function ‘static cv::Mat Color::readColors(const cv::Mat&)’:
+2019-05-14T12:30:53     ./src/color.cpp:28:10: warning: unused variable ‘min’ [-Wunused-variable]
+2019-05-14T12:30:53        double min = 180;
+2019-05-14T12:30:53               ^~~
+2019-05-14T12:30:53     ./src/color.cpp:29:10: warning: unused variable ‘max’ [-Wunused-variable]
+2019-05-14T12:30:53        double max = 0;
+2019-05-14T12:30:53               ^~~
+2019-05-14T12:30:53     g++ -pthread -shared -Wl,-z,relro -specs=/usr/lib/rpm/redhat/redhat-hardened-ld build/temp.linux-x86_64-2.7/./src/python_module.o build/temp.linux-x86_64-2.7/./src/color.o -L/usr/local/lib64 -L/usr/lib64 -lopencv_core -lopencv_highgui -lpython2.7 -o build/lib.linux-x86_64-2.7/VisionPNP.so
+2019-05-14T12:30:53     copying build/lib.linux-x86_64-2.7/VisionPNP.so ->
+2019-05-14T12:30:53     Creating /home/felix/.local/lib/python2.7/site-packages/VisionPNP.egg-link (link to .)
+2019-05-14T12:30:53     Adding VisionPNP 1.0 to easy-install.pth file
+
+2019-05-14T12:30:53     Installed /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:30:53 Successfully installed VisionPNP
+2019-05-14T12:30:53 Cleaning up...
+2019-05-14T12:30:53 Removed build tracker '/tmp/pip-req-tracker-68atRy'
+2019-05-14T12:31:29 DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7.
+2019-05-14T12:31:30 Created temporary directory: /tmp/pip-ephem-wheel-cache-NZYZCv
+2019-05-14T12:31:30 Created temporary directory: /tmp/pip-req-tracker-rI4g7J
+2019-05-14T12:31:30 Created requirements tracker '/tmp/pip-req-tracker-rI4g7J'
+2019-05-14T12:31:30 Created temporary directory: /tmp/pip-install-Z9Bu1y
+2019-05-14T12:31:30 Obtaining file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:31:30   Added file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline to build tracker '/tmp/pip-req-tracker-rI4g7J'
+2019-05-14T12:31:30     Running setup.py (path:/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py) egg_info for package from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:31:30     Running command python setup.py egg_info
+2019-05-14T12:31:30     running egg_info
+2019-05-14T12:31:30     writing requirements to VisionPNP.egg-info/requires.txt
+2019-05-14T12:31:30     writing VisionPNP.egg-info/PKG-INFO
+2019-05-14T12:31:30     writing top-level names to VisionPNP.egg-info/top_level.txt
+2019-05-14T12:31:30     writing dependency_links to VisionPNP.egg-info/dependency_links.txt
+2019-05-14T12:31:30     reading manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:31:30     writing manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:31:30   Source in /home/felix/dev/thesis/thesisba/cv-scripts/pipeline has version 1.0, which satisfies requirement VisionPNP==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:31:30   Removed VisionPNP==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline from build tracker '/tmp/pip-req-tracker-rI4g7J'
+2019-05-14T12:31:30 Requirement already satisfied: pybind11 in /usr/local/lib/python3.6/site-packages (from VisionPNP==1.0) (2.2.4)
+2019-05-14T12:31:30 Installing collected packages: VisionPNP
+2019-05-14T12:31:30   Found existing installation: VisionPNP 1.0
+2019-05-14T12:31:30     Uninstalling VisionPNP-1.0:
+2019-05-14T12:31:30       Created temporary directory: /tmp/pip-uninstall-y0DETH
+2019-05-14T12:31:30       Removing file or directory /home/felix/.local/lib/python2.7/site-packages/VisionPNP.egg-link
+2019-05-14T12:31:30       Removing pth entries from /home/felix/.local/lib/python2.7/site-packages/easy-install.pth:
+2019-05-14T12:31:30       Removing entry: /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:31:30       Successfully uninstalled VisionPNP-1.0
+2019-05-14T12:31:30   Running setup.py develop for VisionPNP
+2019-05-14T12:31:30     Running command /usr/bin/python -c 'import setuptools, tokenize;__file__='"'"'/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' develop --no-deps --user --prefix=
+2019-05-14T12:31:30     running develop
+2019-05-14T12:31:30     running egg_info
+2019-05-14T12:31:30     writing requirements to VisionPNP.egg-info/requires.txt
+2019-05-14T12:31:30     writing VisionPNP.egg-info/PKG-INFO
+2019-05-14T12:31:30     writing top-level names to VisionPNP.egg-info/top_level.txt
+2019-05-14T12:31:30     writing dependency_links to VisionPNP.egg-info/dependency_links.txt
+2019-05-14T12:31:30     reading manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:31:30     writing manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:31:30     running build_ext
+2019-05-14T12:31:30     copying build/lib.linux-x86_64-2.7/VisionPNP.so ->
+2019-05-14T12:31:30     Creating /home/felix/.local/lib/python2.7/site-packages/VisionPNP.egg-link (link to .)
+2019-05-14T12:31:30     Adding VisionPNP 1.0 to easy-install.pth file
+
+2019-05-14T12:31:30     Installed /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:31:30 Successfully installed VisionPNP
+2019-05-14T12:31:30 Cleaning up...
+2019-05-14T12:31:30 Removed build tracker '/tmp/pip-req-tracker-rI4g7J'
+2019-05-14T12:32:05 DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7.
+2019-05-14T12:32:05 Created temporary directory: /tmp/pip-ephem-wheel-cache-b8hNe0
+2019-05-14T12:32:05 Created temporary directory: /tmp/pip-req-tracker-Ttlf6y
+2019-05-14T12:32:05 Created requirements tracker '/tmp/pip-req-tracker-Ttlf6y'
+2019-05-14T12:32:05 Created temporary directory: /tmp/pip-install-bAcRUC
+2019-05-14T12:32:05 Obtaining file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:32:05   Added file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline to build tracker '/tmp/pip-req-tracker-Ttlf6y'
+2019-05-14T12:32:05     Running setup.py (path:/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py) egg_info for package from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:32:05     Running command python setup.py egg_info
+2019-05-14T12:32:05     running egg_info
+2019-05-14T12:32:05     writing requirements to VisionPNP.egg-info/requires.txt
+2019-05-14T12:32:05     writing VisionPNP.egg-info/PKG-INFO
+2019-05-14T12:32:05     writing top-level names to VisionPNP.egg-info/top_level.txt
+2019-05-14T12:32:05     writing dependency_links to VisionPNP.egg-info/dependency_links.txt
+2019-05-14T12:32:05     reading manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:32:05     writing manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:32:05   Source in /home/felix/dev/thesis/thesisba/cv-scripts/pipeline has version 1.0, which satisfies requirement VisionPNP==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:32:05   Removed VisionPNP==1.0 from file:///home/felix/dev/thesis/thesisba/cv-scripts/pipeline from build tracker '/tmp/pip-req-tracker-Ttlf6y'
+2019-05-14T12:32:05 Requirement already satisfied: pybind11 in /usr/local/lib/python3.6/site-packages (from VisionPNP==1.0) (2.2.4)
+2019-05-14T12:32:05 Installing collected packages: VisionPNP
+2019-05-14T12:32:05   Found existing installation: VisionPNP 1.0
+2019-05-14T12:32:05     Uninstalling VisionPNP-1.0:
+2019-05-14T12:32:05       Created temporary directory: /tmp/pip-uninstall-mpEKJF
+2019-05-14T12:32:05       Removing file or directory /home/felix/.local/lib/python2.7/site-packages/VisionPNP.egg-link
+2019-05-14T12:32:05       Removing pth entries from /home/felix/.local/lib/python2.7/site-packages/easy-install.pth:
+2019-05-14T12:32:05       Removing entry: /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:32:05       Successfully uninstalled VisionPNP-1.0
+2019-05-14T12:32:05   Running setup.py develop for VisionPNP
+2019-05-14T12:32:05     Running command /usr/bin/python -c 'import setuptools, tokenize;__file__='"'"'/home/felix/dev/thesis/thesisba/cv-scripts/pipeline/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' develop --no-deps --user --prefix=
+2019-05-14T12:32:05     running develop
+2019-05-14T12:32:05     running egg_info
+2019-05-14T12:32:05     writing requirements to VisionPNP.egg-info/requires.txt
+2019-05-14T12:32:05     writing VisionPNP.egg-info/PKG-INFO
+2019-05-14T12:32:05     writing top-level names to VisionPNP.egg-info/top_level.txt
+2019-05-14T12:32:05     writing dependency_links to VisionPNP.egg-info/dependency_links.txt
+2019-05-14T12:32:05     reading manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:32:05     writing manifest file 'VisionPNP.egg-info/SOURCES.txt'
+2019-05-14T12:32:05     running build_ext
+2019-05-14T12:32:05     building 'VisionPNP' extension
+2019-05-14T12:32:05     creating build
+2019-05-14T12:32:05     creating build/temp.linux-x86_64-2.7
+2019-05-14T12:32:05     creating build/temp.linux-x86_64-2.7/src
+2019-05-14T12:32:05     gcc -pthread -fno-strict-aliasing -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -fPIC -I/usr/local/include/pybind11 -I/usr/local/include/opencv4 -I./src -I/usr/include/python2.7 -c ./src/python_module.cpp -o build/temp.linux-x86_64-2.7/./src/python_module.o -std=c++11 -fPIC
+2019-05-14T12:32:05     gcc -pthread -fno-strict-aliasing -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -fPIC -I/usr/local/include/pybind11 -I/usr/local/include/opencv4 -I./src -I/usr/include/python2.7 -c ./src/color.cpp -o build/temp.linux-x86_64-2.7/./src/color.o -std=c++11 -fPIC
+2019-05-14T12:32:05     ./src/color.cpp: In static member function ‘static cv::Mat Color::readColors(const cv::Mat&)’:
+2019-05-14T12:32:05     ./src/color.cpp:28:10: warning: unused variable ‘min’ [-Wunused-variable]
+2019-05-14T12:32:05        double min = 180;
+2019-05-14T12:32:05               ^~~
+2019-05-14T12:32:05     ./src/color.cpp:29:10: warning: unused variable ‘max’ [-Wunused-variable]
+2019-05-14T12:32:05        double max = 0;
+2019-05-14T12:32:05               ^~~
+2019-05-14T12:32:05     gcc -pthread -fno-strict-aliasing -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -D_GNU_SOURCE -fPIC -fwrapv -fPIC -I/usr/local/include/pybind11 -I/usr/local/include/opencv4 -I./src -I/usr/include/python2.7 -c ./src/image.cpp -o build/temp.linux-x86_64-2.7/./src/image.o -std=c++11 -fPIC
+2019-05-14T12:32:08     ./src/image.cpp: In static member function ‘static cv::Mat Image::cropImageToMask(const cv::Mat&, const cv::Mat&)’:
+2019-05-14T12:32:08     ./src/image.cpp:201:21: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+2019-05-14T12:32:08        for( int i = 0; i < contours.size(); i++ )
+2019-05-14T12:32:08                        ~~^~~~~~~~~~~~~~~~~
+2019-05-14T12:32:08     creating build/lib.linux-x86_64-2.7
+2019-05-14T12:32:08     g++ -pthread -shared -Wl,-z,relro -specs=/usr/lib/rpm/redhat/redhat-hardened-ld build/temp.linux-x86_64-2.7/./src/python_module.o build/temp.linux-x86_64-2.7/./src/color.o build/temp.linux-x86_64-2.7/./src/image.o -L/usr/local/lib64 -L/usr/lib64 -lopencv_core -lopencv_highgui -lpython2.7 -o build/lib.linux-x86_64-2.7/VisionPNP.so
+2019-05-14T12:32:08     copying build/lib.linux-x86_64-2.7/VisionPNP.so ->
+2019-05-14T12:32:08     Creating /home/felix/.local/lib/python2.7/site-packages/VisionPNP.egg-link (link to .)
+2019-05-14T12:32:08     Adding VisionPNP 1.0 to easy-install.pth file
+
+2019-05-14T12:32:08     Installed /home/felix/dev/thesis/thesisba/cv-scripts/pipeline
+2019-05-14T12:32:08 Successfully installed VisionPNP
+2019-05-14T12:32:08 Cleaning up...
+2019-05-14T12:32:08 Removed build tracker '/tmp/pip-req-tracker-Ttlf6y'

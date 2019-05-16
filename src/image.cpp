@@ -190,33 +190,33 @@ Mat Image::cropImageToMask(const Mat& image, const Mat& mask) {
   vector<vector<Point>> contours;
   vector<Vec4i> hierarchy;
   vector<Point> cnt;
-  Mat canny;
 
-  Canny( mask, canny, 0, 1, 3 );
-  findContours(canny, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
-
+  findContours(mask, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE, Point(0, 0));
   sort(contours.begin(), contours.end(), compareContourAreas);
   cnt = contours[contours.size()-1];
 
   vector<vector<Point> > contours_poly( contours.size() );
+  vector<Rect> boundRect( contours.size() );
+  vector<Point2f>center( contours.size() );
+  vector<float>radius( contours.size() );
 
-  double maxArea = 0.0;
-  for( int i = 0; i < contours.size(); i++ )
-  {
-      double area = contourArea(contours[i]);
-      if(area > maxArea) {
-          maxArea = area;
-          approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
-          bRect = boundingRect( Mat(contours_poly[i]) );
-      }
-  }
+  for( long unsigned int i = 0; i < contours.size(); i++ )
+     { approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+       boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+       minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
+     }
 
-  Mat debugImg = image.clone();
-  for( int i = 0; i< contours.size(); i++ ) {
-    Scalar color = Scalar(255, 0,0);
-    drawContours( debugImg, contours, i, color, 2, 8, vector<Vec4i>(), 0, Point() );
-  }
-  imwrite("cropMask.png", debugImg);
+
+  /// Draw polygonal contour + bonding rects + circles
+  Mat drawing = image.clone();
+  for( long unsigned int i = 0; i< contours.size(); i++ )
+     {
+       Scalar color = Scalar( 255, 0,0 );
+       drawContours( drawing, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
+       rectangle( drawing, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0 );
+       circle( drawing, center[i], (int)radius[i], color, 2, 8, 0 );
+     }
+  imwrite("output_cropped.png", drawing);
 
   return image(bRect);
 }

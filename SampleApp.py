@@ -16,11 +16,6 @@ croppedImage = VisionPNP.cropImageToMask(rawImage, maskImageConv)
 croppedImage = np.array(croppedImage, copy=False)
 cv2.imwrite('./02_cropped.png', croppedImage)
 
-# inputImg = cv2.imread('./images/tray_resistor.png')
-# transfered = VisionPNP.returnImage(inputImg)
-# returnedImg = np.array(transfered, copy=False)
-# cv2.imwrite('./returned-result.png', returnedImg)
-
 # maskValues = VisionPNP.getHSVColorRange('./images/gripper.png')
 # print(maskValues)
 

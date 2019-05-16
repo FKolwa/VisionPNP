@@ -1,3 +1,5 @@
 bin/*
 build/*
 *.png
+*.so
+*.egg-info/*

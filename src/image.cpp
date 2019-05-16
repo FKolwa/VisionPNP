@@ -195,7 +195,7 @@ Mat Image::cropImageToMask(const Mat& image, const Mat& mask) {
   Canny( mask, canny, 0, 1, 3 );
   findContours(canny, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-  // sort(contours.begin(), contours.end(), compareContourAreas);
+  sort(contours.begin(), contours.end(), compareContourAreas);
   cnt = contours[contours.size()-1];
 
   vector<vector<Point> > contours_poly( contours.size() );

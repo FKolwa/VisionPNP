@@ -10,26 +10,28 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
   resize(outputImage, outputImage, Size(), 0.25, 0.25);
   Mat workImage;
 
+
+
   // Remove all the color within the color range
   workImage = removeColorRange(inputImage, colorRange);
-  cvtColor(workImage, workImage, COLOR_BGR2GRAY);
-  threshold(workImage, workImage, 0, 255, THRESH_BINARY | THRESH_OTSU);
 
   // Preprocess raw image data
-  resize(workImage, workImage, Size(), 0.25, 0.25);
+  cvtColor(workImage, workImage, COLOR_BGR2GRAY);
+  threshold(workImage, workImage, 251, 255, THRESH_BINARY);
   blur(workImage, workImage, Size( 10, 10 ));
-  threshold(workImage, workImage, 0, 255, THRESH_BINARY | THRESH_OTSU);
+  resize(workImage, workImage, Size(), 0.25, 0.25);
+  imwrite("binary.png", workImage);
 
   // Create and configure generalized Hough transformation
   Ptr<GeneralizedHoughGuil> guil = createGeneralizedHoughGuil();
   guil->setMinDist(100.0);
-  guil->setLevels(360);
+  guil->setLevels(1000);
   guil->setDp(2.0);
   guil->setMaxBufferSize(1000);
 
   guil->setMinAngle(0.0);
   guil->setMaxAngle(180.0);
-  guil->setAngleStep(1.0);
+  guil->setAngleStep(0.1);
   guil->setAngleThresh(1000);
 
   guil->setMinScale(0.1);
@@ -68,6 +70,10 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
       cout << "Scale: " << scale << endl;
       cout << "Rotation: " << angle << endl;
 
+      Mat rotated = getRotationMatrix2D(pos, angle, scale);
+
+      // rotated.copyTo(outputImage);
+
       Point2f pts[4];
       rect.points(pts);
 
@@ -75,9 +81,7 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
       line(outputImage, pts[1], pts[2], Scalar(0, 0, 255), 3);
       line(outputImage, pts[2], pts[3], Scalar(0, 0, 255), 3);
       line(outputImage, pts[3], pts[0], Scalar(0, 0, 255), 3);
-
     }
-
     imwrite("result.png", outputImage);
   }
 

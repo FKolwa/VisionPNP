@@ -14,8 +14,8 @@ vector <vector<int>> Color::getHSVColorRange(const string& imagePath) {
   // Calculates mean and standard deviation of all color elements.
   Scalar mean,dev;
   meanStdDev(colorMatrix,mean,dev);
-  threshold.push_back(vector<int> {int(mean[0]-dev[0]*2), int(mean[1]-dev[1]*2), int(mean[2]-dev[2]*2)});
-  threshold.push_back(vector<int> {int(mean[0]+dev[0]*2), int(mean[1]+dev[1]*2), int(mean[2]+dev[2]*2)});
+  threshold.push_back(vector<int> {int(mean[0]-dev[0]*4), int(mean[1]-dev[1]*4), int(mean[2]-dev[2]*4)});
+  threshold.push_back(vector<int> {int(mean[0]+dev[0]*4), int(mean[1]+dev[1]*4), int(mean[2]+dev[2]*4)});
 
   return threshold;
 }

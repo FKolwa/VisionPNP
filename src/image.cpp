@@ -3,18 +3,17 @@
 //--------------------------------------------------------<
 // Match template in image and return rotation
 float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const vector <vector<int>>& colorRange) {
-  bool DEBUG = false;
+  bool DEBUG = true;
   vector<Vec4f> detected;
   TickMeter tm;
-  Mat workImage;
   Mat outputImage = inputImage.clone();
+  resize(outputImage, outputImage, Size(), 0.25, 0.25);
+  Mat workImage;
 
+  // Remove all the color within the color range
   workImage = removeColorRange(inputImage, colorRange);
-
-  // binarize image
   cvtColor(workImage, workImage, COLOR_BGR2GRAY);
   threshold(workImage, workImage, 0, 255, THRESH_BINARY | THRESH_OTSU);
-
 
   // Preprocess raw image data
   resize(workImage, workImage, Size(), 0.25, 0.25);
@@ -42,6 +41,7 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
   guil->setTemplate(templateImage);
 
   // Detect template in preprocessed image
+  cout << "Start detecting" << endl;
   tm.start();
   guil->detect(workImage, detected);
   tm.stop();
@@ -50,31 +50,33 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
 
   // Debug output
   if(DEBUG) {
-    cout << "Found : " << detected.size() << " objects" << endl;
-    cout << "Detection time : " << tm.getTimeMilli() << " ms" << endl;
+    for(int i = 0; i < 1; i++) {
+      cout << "Found : " << detected.size() << " objects" << endl;
+      cout << "Detection time : " << tm.getTimeMilli() << " ms" << endl;
 
+      Point2f pos(detected[i][0], detected[i][1]);
+      float scale = detected[i][2];
 
-    Point2f pos(detected[0][0], detected[0][1]);
-    float scale = detected[0][2];
+      // cvtColor(outputImage, outputImage, COLOR_GRAY2BGR);
 
-    cvtColor(outputImage, outputImage, COLOR_GRAY2BGR);
+      RotatedRect rect;
+      rect.center = pos;
+      rect.size = Size2f(templateImage.cols * scale, templateImage.rows * scale);
+      rect.angle = angle;
 
-    RotatedRect rect;
-    rect.center = pos;
-    rect.size = Size2f(templateImage.cols * scale, templateImage.rows * scale);
-    rect.angle = angle;
+      cout << "Position: " << detected[i][0] << " " << detected[i][1] << endl;
+      cout << "Scale: " << scale << endl;
+      cout << "Rotation: " << angle << endl;
 
-    cout << "Position: " << detected[0][0] << " " << detected[0][1] << endl;
-    cout << "Scale: " << scale << endl;
-    cout << "Rotation: " << angle << endl;
+      Point2f pts[4];
+      rect.points(pts);
 
-    Point2f pts[4];
-    rect.points(pts);
+      line(outputImage, pts[0], pts[1], Scalar(0, 0, 255), 3);
+      line(outputImage, pts[1], pts[2], Scalar(0, 0, 255), 3);
+      line(outputImage, pts[2], pts[3], Scalar(0, 0, 255), 3);
+      line(outputImage, pts[3], pts[0], Scalar(0, 0, 255), 3);
 
-    line(outputImage, pts[0], pts[1], Scalar(0, 0, 255), 3);
-    line(outputImage, pts[1], pts[2], Scalar(0, 0, 255), 3);
-    line(outputImage, pts[2], pts[3], Scalar(0, 0, 255), 3);
-    line(outputImage, pts[3], pts[0], Scalar(0, 0, 255), 3);
+    }
 
     imwrite("result.png", outputImage);
   }

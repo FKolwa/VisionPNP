@@ -9,7 +9,7 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
   Mat outputImage = inputImage.clone();
   resize(outputImage, outputImage, Size(), 0.25, 0.25);
   Mat workImage;
-
+  Mat templateScaled = templateImage.clone();
 
 
   // Remove all the color within the color range
@@ -20,6 +20,7 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
   threshold(workImage, workImage, 251, 255, THRESH_BINARY);
   blur(workImage, workImage, Size( 10, 10 ));
   resize(workImage, workImage, Size(), 0.25, 0.25);
+  resize(templateScaled, templateScaled, Size(), 0.9, 0.9);
   imwrite("binary.png", workImage);
 
   // Create and configure generalized Hough transformation
@@ -40,7 +41,7 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
   guil->setScaleThresh(1000);
 
   guil->setPosThresh(100);
-  guil->setTemplate(templateImage);
+  guil->setTemplate(templateScaled);
 
   // Detect template in preprocessed image
   cout << "Start detecting" << endl;

@@ -147,9 +147,7 @@ static vector<int> pyFindShape(const string& imagePath) {
 
 static float pyMatchTemplate(const py::array& inputImage, const py::array& templateImage, const vector <vector<int>>& colorRange) {
   Mat imageMat = numpyToMat(inputImage);
-  cout << "input done" << endl;
   Mat tempMat = numpyToMat(templateImage);
-  cout << "starting" << endl;
   return Image::matchTemplate(imageMat, tempMat, colorRange);
 }
 
@@ -157,6 +155,21 @@ static float pyMatchTemplate(const string& imagePath, const string& templatePath
   return Image::matchTemplate(imagePath, templatePath, colorRange);
 }
 
+static vector<int> pyFindContainedRect(const py::array& inputImage) {
+  Mat imageMat = numpyToMat(inputImage);
+  Rect bRect = Image::findContainedRect(imageMat);
+  return vector<int> {bRect.height, bRect.width, bRect.x, bRect.y};
+}
+
+static Mat pyCropImageToRect(const py::array& inputImage, const vector<int> boudingRect) {
+  Mat imageMat = numpyToMat(inputImage);
+  Rect bRect;
+  bRect.height = boudingRect[0];
+  bRect.width = boudingRect[1];
+  bRect.x = boudingRect[2];
+  bRect.y = boudingRect[3];
+  return Image::cropImageToRect(imageMat, bRect);
+}
 //----------------------------------------------------------<
 // Python module definition
 PYBIND11_MODULE(VisionPNP, m){
@@ -206,6 +219,15 @@ PYBIND11_MODULE(VisionPNP, m){
     "Creates binary mask only containing elements contained in provided color range.",
     py::arg("inputImage"),
     py::arg("colorRange"));
+
+  m.def("findContainedRect", &pyFindContainedRect,
+    "Extracts bouding rect from shape contained in mask.",
+    py::arg("mask"));
+
+  m.def("cropImageToRect", &pyCropImageToRect,
+    "Crops image to bounding rect.",
+    py::arg("inputImage"),
+    py::arg("boundingRect"));
 
   py::class_<cv::Mat>(m, "pyMat", py::buffer_protocol())
     .def_buffer([](cv::Mat& im) -> py::buffer_info {

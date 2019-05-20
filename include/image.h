@@ -17,6 +17,8 @@ class Image {
     static vector<int> findShape(const string& pathToImage);
     static vector<int> findShape(const Mat& searchImage);
     static Mat removeColorRange(const Mat& inputImage, const vector <vector<int>>& colorRange);
+    static Rect findContainedRect(const Mat& mask);
+    static Mat cropImageToRect(const Mat& image, const Rect& boudingRect);
     static Mat cropImageToMask(const Mat& image, const Mat& mask);
     static Mat createColorRangeMask(const Mat& image, const vector <vector<int>>& colorRange);
   private:

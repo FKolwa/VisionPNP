@@ -184,7 +184,13 @@ vector<int> Image::getCenterOfHull(const vector<Point>& hull) {
 
 // Crop and return image based on provided mask
 Mat Image::cropImageToMask(const Mat& image, const Mat& mask) {
-  Rect bRect;
+  Rect boundRect = findContainedRect(mask);
+  return image(boundRect).clone();
+}
+
+// Extract bounding rect from picture
+Rect Image::findContainedRect(const Mat& mask) {
+  Rect boundRect;
   vector<vector<Point>> contours;
   vector<Vec4i> hierarchy;
   vector<Point> cnt;
@@ -193,17 +199,13 @@ Mat Image::cropImageToMask(const Mat& image, const Mat& mask) {
   sort(contours.begin(), contours.end(), compareContourAreas);
   cnt = contours[contours.size()-1];
 
-  vector<Point> contours_poly;
-  Rect boundRect;
-
   boundRect = boundingRect( Mat(cnt) );
 
-  /// Draw bonding rect
-  // Mat drawing = image.clone();
-  // Scalar color = Scalar(0, 0, 255);
-  // rectangle( drawing, boundRect.tl(), boundRect.br(), color, 2, 8, 0 );
-  // imwrite("output_cropped.png", image(boundRect));
+  return boundRect;
+}
 
+// Crop image to bouding
+Mat Image::cropImageToRect(const Mat& image, const Rect& boundRect) {
   return image(boundRect).clone();
 }
 

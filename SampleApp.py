@@ -15,29 +15,37 @@ templateImage = cv2.imread('./images/template-output.png')
 # Read the HSV color range from a background image
 maskValues = VisionPNP.getHSVColorRange('./images/gripper.png')
 
-#---------<
 # Create a binarized image of th input containing only the areas within the
 # provided color mask (black)
 maskImage = VisionPNP.createColorRangeMask(headCamImage, maskValues)
 maskImageConv = np.array(maskImage)
 
-#---------<
 # Crop the input image to the shape of the provided mask
-croppedImage = VisionPNP.cropImageToMask(headCamImage, maskImageConv)
-croppedImageConv = np.array(croppedImage)
+croppedImageRaw = VisionPNP.cropImageToMask(headCamImage, maskImageConv)
+croppedImageConv = np.array(croppedImageRaw)
 
-#---------<
 # Find the position of a single object inside the provided image
 position = VisionPNP.findShape(croppedImageConv)
 print(position)
 cv2.circle(croppedImageConv,(position[0], position[1]), 4, (0,0,255), -1)
-cv2.imwrite('./01_object_com_tray.png', croppedImageConv)
+cv2.imwrite('./01_object_on_tray.png', croppedImageConv)
+
+#---------<
+# Scenario 1B - Extract bouding rect from mask, then use rect to crop image.
+#---------<
+# Extract bouding rect fom binarized mask image
+bRect = VisionPNP.findContainedRect(maskImageConv)
+croppedImageRaw1B = VisionPNP.cropImageToRect(headCamImage, bRect)
+croppedImageConv1B = np.array(croppedImageRaw1B)
+
+cv2.imwrite('./01B_tray_image_cropped.png', croppedImageConv1B)
 
 #---------<
 # Scenario 2 - Find position of object in gripper image (no orientation)
 #---------<
 # Create working copy
 bedCamImageCopy = bedCamImage.copy()
+
 # Clean green background
 cleanedBedCamRaw = VisionPNP.removeColorRange(bedCamImageCopy, maskValues)
 cleanedBedCam = np.array(cleanedBedCamRaw)
@@ -46,8 +54,7 @@ cleanedBedCam = np.array(cleanedBedCamRaw)
 center = VisionPNP.findShape(cleanedBedCam)
 print(center)
 cv2.circle(bedCamImageCopy,(center[0], center[1]), 4, (0,0,255), -1)
-cv2.imwrite('./02_object_com_gripper.png', bedCamImageCopy)
-
+cv2.imwrite('./02_object_on_gripper.png', bedCamImageCopy)
 
 #---------<
 # Scenario 3 - Find template in search image (with orientation)
@@ -57,3 +64,4 @@ cv2.imwrite('./02_object_com_gripper.png', bedCamImageCopy)
 # Return its orientation.
 orientation = VisionPNP.matchTemplate('./images/tiny-on-gripper.png', './images/template-output.png', maskValues)
 print(orientation)
+

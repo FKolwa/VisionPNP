@@ -11,18 +11,26 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
   Mat workImage;
   Mat templateScaled = templateImage.clone();
 
+  imwrite("01_input_image.png", inputImage);
+  imwrite("01_input_template.png", templateScaled);
+
 
   // Remove all the color within the color range
   workImage = removeColorRange(inputImage, colorRange);
+  imwrite("02_removed_color.png", workImage);
+
 
   // Preprocess raw image data
   cvtColor(workImage, workImage, COLOR_BGR2GRAY);
   blur(workImage, workImage, Size( 10, 10 ));
+  imwrite("03_blur.png", workImage);
   resize(workImage, workImage, Size(), 0.25, 0.25);
+  imwrite("04_small.png", workImage);
   threshold(workImage, workImage, 251, 255, THRESH_BINARY);
+  imwrite("05_binary.png", workImage);
   resize(templateScaled, templateScaled, Size(), 0.9, 0.9);
   threshold(templateScaled, templateScaled, 251, 255, THRESH_BINARY);
-  imwrite("/tmp/binary.png", workImage);
+  imwrite("06_small_temp.png", templateScaled);
 
   // Create and configure generalized Hough transformation
   Ptr<GeneralizedHoughGuil> guil = createGeneralizedHoughGuil();
@@ -33,11 +41,11 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
 
   guil->setMinAngle(0.0);
   guil->setMaxAngle(180.0);
-  guil->setAngleStep(0.1);
+  guil->setAngleStep(1.0);
   guil->setAngleThresh(1000);
 
   guil->setMinScale(0.1);
-  guil->setMaxScale(10);
+  guil->setMaxScale(1.1);
   guil->setScaleStep(0.05);
   guil->setScaleThresh(1000);
 
@@ -54,7 +62,7 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
 
   // Debug output
   if(DEBUG) {
-    for(int i = 0; i < 1; i++) {
+    for(int i = 0; i < detected.size(); i++) {
       cout << "Found : " << detected.size() << " objects" << endl;
       cout << "Detection time : " << tm.getTimeMilli() << " ms" << endl;
 
@@ -78,6 +86,13 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
 
       Point2f pts[4];
       rect.points(pts);
+      Scalar color;
+
+      if(i == 0) {
+        color = Scalar(0, 255, 0);
+      } else {
+        color = Scalar(0, 0, 255);
+      }
 
       line(outputImage, pts[0], pts[1], Scalar(0, 0, 255), 3);
       line(outputImage, pts[1], pts[2], Scalar(0, 0, 255), 3);
@@ -129,7 +144,7 @@ vector<int> Image::findShape(const Mat& image) {
   // Get the convex hull and center
   hull = getHullFromContour(cnt);
   center = getCenterOfHull(hull);
-
+  cout << center[0] << center[1] << endl;
   return center;
 }
 

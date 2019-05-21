@@ -17,11 +17,12 @@ float Image::matchTemplate(const Mat& inputImage,const Mat& templateImage, const
 
   // Preprocess raw image data
   cvtColor(workImage, workImage, COLOR_BGR2GRAY);
-  threshold(workImage, workImage, 251, 255, THRESH_BINARY);
   blur(workImage, workImage, Size( 10, 10 ));
   resize(workImage, workImage, Size(), 0.25, 0.25);
+  threshold(workImage, workImage, 251, 255, THRESH_BINARY);
   resize(templateScaled, templateScaled, Size(), 0.9, 0.9);
-  imwrite("binary.png", workImage);
+  threshold(templateScaled, templateScaled, 251, 255, THRESH_BINARY);
+  imwrite("/tmp/binary.png", workImage);
 
   // Create and configure generalized Hough transformation
   Ptr<GeneralizedHoughGuil> guil = createGeneralizedHoughGuil();

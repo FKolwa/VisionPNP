@@ -6,12 +6,9 @@
 #include "opencv2/opencv.hpp"
 #endif
 
-using namespace cv;
-using namespace std;
-
 class Color {
   public:
-    static vector <vector<int>> getHSVColorRange(const string& imagePath);
+    static std::vector<std::vector<int>> getHSVColorRange(const std::string& imagePath);
   private:
-    static Mat readColors(const Mat& image) ;
+    static cv::Mat readColors(const cv::Mat& image) ;
 };

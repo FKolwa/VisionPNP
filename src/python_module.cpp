@@ -4,11 +4,10 @@
 #include "../include/color.h"
 #include "../include/image.h"
 
-using namespace std;
 namespace py = pybind11;
 
-string type2str(int type) {
-  string r;
+std::string type2str(int type) {
+  std::string r;
 
   uchar depth = type & CV_MAT_DEPTH_MASK;
   uchar chans = 1 + (type >> CV_CN_SHIFT);
@@ -32,7 +31,7 @@ string type2str(int type) {
 
 //----------------------------------------------------------<
 // numpy array to Mat converter
-static Mat numpyToMat(py::array input) {
+static cv::Mat numpyToMat(py::array input) {
   py::buffer_info info = input.request();
   unsigned int width = info.shape[0];
   unsigned int height = info.shape[1];
@@ -48,56 +47,56 @@ static Mat numpyToMat(py::array input) {
     default: type = CV_8UC1;
   }
 
-  Mat img(Size(width, height), type, ptr, Mat::AUTO_STEP);
+  cv::Mat img(cv::Size(width, height), type, ptr, cv::Mat::AUTO_STEP);
   return img;
 }
 
 //----------------------------------------------------------<
 // Wrappers for methods that expect Mat objects as arguments
-static Mat pyRemoveColorRange(const py::array& inputImage, const vector <vector<int>>& colorRange) {
-  Mat image = numpyToMat(inputImage);
+static cv::Mat pyRemoveColorRange(const py::array& inputImage, const std::vector<std::vector<int>>& colorRange) {
+  cv::Mat image = numpyToMat(inputImage);
   return Image::removeColorRange(image, colorRange);
 }
 
-static Mat pyCropImageToMask(const py::array& image, const py::array& mask) {
-  Mat matImage = numpyToMat(image);
-  Mat matMask = numpyToMat(mask);
+static cv::Mat pyCropImageToMask(const py::array& image, const py::array& mask) {
+  cv::Mat matImage = numpyToMat(image);
+  cv::Mat matMask = numpyToMat(mask);
   return Image::cropImageToMask(matImage, matMask);
 }
 
-static Mat pyCreateColorRangeMask(const py::array& image, const vector <vector<int>>& colorRange) {
-  Mat matImage = numpyToMat(image);
+static cv::Mat pyCreateColorRangeMask(const py::array& image, const std::vector<std::vector<int>>& colorRange) {
+  cv::Mat matImage = numpyToMat(image);
   return Image::createColorRangeMask(matImage, colorRange);
 }
 
-static vector<int> pyFindShape(const py::array& image) {
-  Mat matImage = numpyToMat(image);
+static std::vector<int> pyFindShape(const py::array& image) {
+  cv::Mat matImage = numpyToMat(image);
   return Image::findShape(matImage);
 }
 
-static vector<int> pyFindShape(const string& imagePath) {
+static std::vector<int> pyFindShape(const std::string& imagePath) {
   return Image::findShape(imagePath);
 }
 
-static float pyMatchTemplate(const py::array& inputImage, const py::array& templateImage, const vector <vector<int>>& colorRange) {
-  Mat imageMat = numpyToMat(inputImage);
-  Mat tempMat = numpyToMat(templateImage);
+static float pyMatchTemplate(const py::array& inputImage, const py::array& templateImage, const std::vector<std::vector<int>>& colorRange) {
+  cv::Mat imageMat = numpyToMat(inputImage);
+  cv::Mat tempMat = numpyToMat(templateImage);
   return Image::matchTemplate(imageMat, tempMat, colorRange);
 }
 
-static float pyMatchTemplate(const string& imagePath, const string& templatePath, const vector <vector<int>>& colorRange) {
+static float pyMatchTemplate(const std::string& imagePath, const std::string& templatePath, const std::vector<std::vector<int>>& colorRange) {
   return Image::matchTemplate(imagePath, templatePath, colorRange);
 }
 
-static vector<int> pyFindContainedRect(const py::array& inputImage) {
-  Mat imageMat = numpyToMat(inputImage);
-  Rect bRect = Image::findContainedRect(imageMat);
-  return vector<int> {bRect.height, bRect.width, bRect.x, bRect.y};
+static std::vector<int> pyFindContainedRect(const py::array& inputImage) {
+  cv::Mat imageMat = numpyToMat(inputImage);
+  cv::Rect bRect = Image::findContainedRect(imageMat);
+  return std::vector<int> {bRect.height, bRect.width, bRect.x, bRect.y};
 }
 
-static Mat pyCropImageToRect(const py::array& inputImage, const vector<int> boudingRect) {
-  Mat imageMat = numpyToMat(inputImage);
-  Rect bRect;
+static cv::Mat pyCropImageToRect(const py::array& inputImage, const std::vector<int> boudingRect) {
+  cv::Mat imageMat = numpyToMat(inputImage);
+  cv::Rect bRect;
   bRect.height = boudingRect[0];
   bRect.width = boudingRect[1];
   bRect.x = boudingRect[2];
@@ -107,9 +106,7 @@ static Mat pyCropImageToRect(const py::array& inputImage, const vector<int> boud
 //----------------------------------------------------------<
 // Python module definition
 
-PYBIND11_PLUGIN(VisionPNP){
-  py::module m("VisionPNP", "python plugin for cv pick and place automation");
-
+void initPythonBindings(py::module& m) {
   m.def("numpyToMat", &numpyToMat);
 
   m.def("getHSVColorRange", &Color::getHSVColorRange,
@@ -117,14 +114,14 @@ PYBIND11_PLUGIN(VisionPNP){
     py::arg("imagePath"));
 
   m.def("matchTemplate",
-    py::overload_cast<const py::array&, const py::array&, const vector<vector<int>>&>(&pyMatchTemplate),
+    py::overload_cast<const py::array&, const py::array&, const std::vector<std::vector<int>>&>(&pyMatchTemplate),
     "Detects and retrieves most likely candidate of provided template in search image.",
     py::arg("inputImage"),
     py::arg("templateImage"),
     py::arg("colorRange"));
 
   m.def("matchTemplate",
-    py::overload_cast<const string&, const string&, const vector<vector<int>>&>(&pyMatchTemplate),
+    py::overload_cast<const std::string&, const std::string&, const std::vector<std::vector<int>>&>(&pyMatchTemplate),
     "Detects and retrieves most likely candidate of provided template in search image.",
     py::arg("imagePath"),
     py::arg("templatePath"),
@@ -136,7 +133,7 @@ PYBIND11_PLUGIN(VisionPNP){
     py::arg("inputImage"));
 
   m.def("findShape",
-    py::overload_cast<const string&>(&pyFindShape),
+    py::overload_cast<const std::string&>(&pyFindShape),
     "Detects arbitrary shape in provided search image.",
     py::arg("imagePath"));
 
@@ -179,5 +176,18 @@ PYBIND11_PLUGIN(VisionPNP){
         }
       );
     });
-  return m.ptr();
 }
+
+// pybind11 legacy fallback
+#ifndef PYBIND11_MODULE
+PYBIND11_PLUGIN(VisionPNP) {
+  py::module m("VisionPNP", "python plugin for cv pick and place automation");
+  initPythonBindings(m);
+  return m.ptr;
+}
+#else
+PYBIND11_MODULE(VisonPNP, m) {
+  m.doc() = "python plugin for cv pick and place automation";
+  initPythonBindings(m);
+}
+#endif

@@ -186,7 +186,7 @@ PYBIND11_PLUGIN(VisionPNP) {
   return m.ptr;
 }
 #else
-PYBIND11_MODULE(VisonPNP, m) {
+PYBIND11_MODULE(VisionPNP, m) {
   m.doc() = "python plugin for cv pick and place automation";
   initPythonBindings(m);
 }

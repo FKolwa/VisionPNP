@@ -78,14 +78,14 @@ static std::vector<int> pyFindShape(const std::string& imagePath) {
   return Image::findShape(imagePath);
 }
 
-static float pyMatchTemplate(const py::array& inputImage, const py::array& templateImage, const std::vector<std::vector<int>>& colorRange) {
-  cv::Mat imageMat = numpyToMat(inputImage);
-  cv::Mat tempMat = numpyToMat(templateImage);
-  return Image::matchTemplate(imageMat, tempMat, colorRange);
-}
+// static float pyMatchTemplate(const py::array& inputImage, const py::array& templateImage, const std::vector<std::vector<int>>& colorRange, const nlohmann::json config) {
+//   cv::Mat imageMat = numpyToMat(inputImage);
+//   cv::Mat tempMat = numpyToMat(templateImage);
+//   return Image::matchTemplate(imageMat, tempMat, colorRange);
+// }
 
-static float pyMatchTemplate(const std::string& imagePath, const std::string& templatePath, const std::vector<std::vector<int>>& colorRange) {
-  return Image::matchTemplate(imagePath, templatePath, colorRange);
+static float pyMatchTemplate(const std::string& imagePath, const std::string& templatePath, const std::vector<std::vector<int>>& colorRange, const std::string configPath) {
+  return Image::matchTemplate(imagePath, templatePath, colorRange, configPath);
 }
 
 static std::vector<int> pyFindContainedRect(const py::array& inputImage) {
@@ -113,19 +113,27 @@ void initPythonBindings(py::module& m) {
     "Returns lower and upper color ranges from provided background picture.",
     py::arg("imagePath"));
 
-  m.def("matchTemplate",
-    py::overload_cast<const py::array&, const py::array&, const std::vector<std::vector<int>>&>(&pyMatchTemplate),
-    "Detects and retrieves most likely candidate of provided template in search image.",
-    py::arg("inputImage"),
-    py::arg("templateImage"),
-    py::arg("colorRange"));
+  // m.def("matchTemplate",
+  //   py::overload_cast<const py::array&, const py::array&, const std::vector<std::vector<int>>&>(&pyMatchTemplate),
+  //   "Detects and retrieves most likely candidate of provided template in search image.",
+  //   py::arg("inputImage"),
+  //   py::arg("templateImage"),
+  //   py::arg("colorRange"));
 
-  m.def("matchTemplate",
-    py::overload_cast<const std::string&, const std::string&, const std::vector<std::vector<int>>&>(&pyMatchTemplate),
+  // m.def("matchTemplate",
+  //   py::overload_cast<const std::string&, const std::string&, const std::vector<std::vector<int>>&, const std::string>(&pyMatchTemplate),
+  //   "Detects and retrieves most likely candidate of provided template in search image.",
+  //   py::arg("imagePath"),
+  //   py::arg("templatePath"),
+  //   py::arg("colorRange"));
+
+  m.def("matchTemplate", &pyMatchTemplate,
     "Detects and retrieves most likely candidate of provided template in search image.",
     py::arg("imagePath"),
     py::arg("templatePath"),
-    py::arg("colorRange"));
+    py::arg("colorRange"),
+    py::arg("configPath"));
+
 
   m.def("findShape",
     py::overload_cast<const py::array&>(&pyFindShape),

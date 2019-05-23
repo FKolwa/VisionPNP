@@ -1,6 +1,10 @@
+#ifndef _IMAGE_H_
+#define _IMAGE_H_
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <string>
+#include "json.h"
 
 #ifndef OPENCV_H
 #define OPENCV_H
@@ -9,8 +13,8 @@
 
 class Image {
   public:
-    static float matchTemplate(const std::string& pathToSearchImage, const std::string& pathToTemplateImage, const std::vector<std::vector<int>>& colorRange);
-    static float matchTemplate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange);
+    static float matchTemplate(const std::string& pathToSearchImage, const std::string& pathToTemplateImage, const std::vector<std::vector<int>>& colorRange, const std::string configPath);
+    static float matchTemplate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const nlohmann::json config);
     static std::vector<int> findShape(const std::string& pathToImage);
     static std::vector<int> findShape(const cv::Mat& searchImage);
     static cv::Mat removeColorRange(const cv::Mat& inputImage, const std::vector<std::vector<int>>& colorRange);
@@ -23,3 +27,4 @@ class Image {
     static std::vector<int> getCenterOfHull(const std::vector<cv::Point>& hull);
     static bool compareContourAreas (std::vector<cv::Point> contour1, std::vector<cv::Point> contour2);
 };
+#endif

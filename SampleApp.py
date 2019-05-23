@@ -4,16 +4,16 @@ import numpy as np
 
 #---------<
 # Input images
-headCamImage = cv2.imread('./images/tray_resistor.png')
-bedCamImage = cv2.imread('./images/tiny-on-gripper.png')
-templateImage = cv2.imread('./images/template-output.png')
+headCamImage = cv2.imread('./resources/tray_resistor.png')
+bedCamImage = cv2.imread('./resources/tiny-on-gripper.png')
+templateImage = cv2.imread('./resources/template-output.png')
 
 
 #---------<
 # Scenario 1 - Find position of object in tray picture
 #---------<
 # Read the HSV color range from a background image
-maskValues = VisionPNP.getHSVColorRange('./images/gripper.png')
+maskValues = VisionPNP.getHSVColorRange('./resources/gripper.png')
 
 # Create a binarized image of th input containing only the areas within the
 # provided color mask (black)
@@ -62,6 +62,5 @@ cv2.imwrite('./02_object_on_gripper.png', bedCamImageCopy)
 # Find a binary template inside a provided input image.
 # The maskValues contain the color range of the background color for easier seperation.
 # Return its orientation.
-orientation = VisionPNP.matchTemplate('./images/tiny-on-gripper.png', './images/template-output.png', maskValues)
+orientation = VisionPNP.matchTemplate('./resources/tiny-on-gripper.png', './resources/template-output.png', maskValues, './resources/houghConfig.json')
 print(orientation)
-

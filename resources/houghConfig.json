@@ -1,0 +1,15 @@
+{
+  "MinDist":        1000.0,
+  "Levels":         360,
+  "Dp":             1.0,
+  "MaxBufferSize":  1000,
+  "MinAngle":       0.0,
+  "MaxAngle":       180.0,
+  "AngleStep":      0.1,
+  "AngleThresh":    1000,
+  "MinScale":       0.1,
+  "MaxScale":       1.1,
+  "ScaleStep":      0.05,
+  "ScaleThresh":    1000,
+  "PosThresh":      100
+}

@@ -25,8 +25,6 @@ cv::Mat Color::readColors(const cv::Mat& image) {
   int offset = 50;
   int cX = (image.cols/2)-offset;
   int cY = (image.rows/2)-offset;
-  double min = 180;
-  double max = 0;
 
   for (int x=0; x<image.cols; x++) {
     for (int y=0; y<image.rows; y++) {

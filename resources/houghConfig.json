@@ -7,8 +7,8 @@
   "MaxAngle":       180.0,
   "AngleStep":      0.1,
   "AngleThresh":    1000,
-  "MinScale":       0.1,
-  "MaxScale":       1.1,
+  "MinScale":       0.9,
+  "MaxScale":       2.0,
   "ScaleStep":      0.05,
   "ScaleThresh":    1000,
   "PosThresh":      100

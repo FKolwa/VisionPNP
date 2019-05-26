@@ -2,27 +2,32 @@
 
 //--------------------------------------------------------<
 // Match template in image and return rotation
-float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const nlohmann::json config) {
+float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const std::string& configPath) {
   bool DEBUG = true;
   float scaleFactor = 0.25;
   std::vector<cv::Vec4f> detected;
   cv::TickMeter tm;
+
+  std::ifstream rawConfig(configPath);
+  nlohmann::json config;
+  rawConfig >> config;
 
   cv::Mat outputImage = inputImage.clone();
   cv::Mat templateScaled = templateImage.clone();
   cv::Mat searchImage = removeColorRange(inputImage, colorRange);
 
   // scale images to reduce amount of pixels to compare
-  cv::resize(outputImage, outputImage, cv::Size(), scaleFactor, scaleFactor);
+  // cv::resize(outputImage, outputImage, cv::Size(), scaleFactor, scaleFactor);
 
   // Preprocess search image
   cv::cvtColor(searchImage, searchImage, cv::COLOR_BGR2GRAY);
   cv::blur(searchImage, searchImage, cv::Size( 10, 10 ));
-  cv::resize(searchImage, searchImage, cv::Size(), scaleFactor, scaleFactor);
+  // cv::resize(searchImage, searchImage, cv::Size(), scaleFactor, scaleFactor);
   cv::threshold(searchImage, searchImage, 251, 255, cv::THRESH_BINARY);
 
   // Preprocess template image
-  cv::resize(templateScaled, templateScaled, cv::Size(), scaleFactor, scaleFactor);
+  cv::cvtColor(templateScaled, templateScaled, cv::COLOR_BGR2GRAY);
+  // cv::resize(templateScaled, templateScaled, cv::Size(), scaleFactor, scaleFactor);
   cv::threshold(templateScaled, templateScaled, 251, 255, cv::THRESH_BINARY);
 
   // Create and configure generalized Hough transformation
@@ -56,13 +61,13 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
 
   // Debug output
   if(DEBUG) {
-    // Draw template on best candidate
-    cv::Mat candidateImage;
-    // cv::resize(templateScaled, candidateImage, cv::Size(), detected[0][2], detected[0][2]);
-    cv::Mat rotationMatrix = cv::getRotationMatrix2D(cv::Point2f(candidateImage.rows/2, candidateImage.cols/2), detected[0][3], detected[0][2]);
-    cv::warpAffine(candidateImage, candidateImage, rotationMatrix, cv::Size (candidateImage.rows, candidateImage.cols));
-    cv::cvtColor(candidateImage, candidateImage, cv::COLOR_GRAY2BGR);
-    candidateImage.copyTo(outputImage(cv::Rect(detected[0][0] - candidateImage.cols/2,detected[0][1] - candidateImage.rows/2,candidateImage.cols, candidateImage.rows)));
+    // // Draw template on best candidate
+    // cv::Mat candidateImage;
+    // // cv::resize(templateScaled, candidateImage, cv::Size(), detected[0][2], detected[0][2]);
+    // cv::Mat rotationMatrix = cv::getRotationMatrix2D(cv::Point2f(candidateImage.rows/2, candidateImage.cols/2), detected[0][3], detected[0][2]);
+    // cv::warpAffine(candidateImage, candidateImage, rotationMatrix, cv::Size (candidateImage.rows, candidateImage.cols));
+    // cv::cvtColor(candidateImage, candidateImage, cv::COLOR_GRAY2BGR);
+    // candidateImage.copyTo(outputImage(cv::Rect(detected[0][0] - candidateImage.cols/2,detected[0][1] - candidateImage.rows/2,candidateImage.cols, candidateImage.rows)));
     for(int i = 0; i < detected.size(); i++) {
       // Create rotated rect from position, scale and rotation
       cv::RotatedRect rect;
@@ -96,15 +101,10 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
   return angle;
 }
 
-float Image::matchTemplate(const std::string& pathToSearchImage, const std::string& pathToTemplateImage, const std::vector<std::vector<int>>& colorRange, const std::string configPath) {
+float Image::matchTemplate(const std::string& pathToSearchImage, const std::string& pathToTemplateImage, const std::vector<std::vector<int>>& colorRange, const std::string& configPath) {
   cv::Mat sourceImage = cv::imread(pathToSearchImage);
   cv::Mat templateImage = cv::imread(pathToTemplateImage, cv::IMREAD_GRAYSCALE);
-
-  std::ifstream rawConfig(configPath);
-  nlohmann::json jsonConfig;
-  rawConfig >> jsonConfig;
-
-  return matchTemplate(sourceImage, templateImage, colorRange, jsonConfig);
+  return matchTemplate(sourceImage, templateImage, colorRange, configPath);
 }
 
 //--------------------------------------------------------<
@@ -132,14 +132,24 @@ std::vector<int> Image::findShape(const cv::Mat& image) {
   // find contours
   cv::findContours(cannyImage, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
+  // Draw contours for debugging
+  drawContours(contours, hierarchy, image, "./DEBUG_findShape_contours.png");
+
   // Find biggest contour
   sort(contours.begin(), contours.end(), compareContourAreas);
   std::vector<cv::Point> cnt = contours[contours.size()-1];
+  std::vector<std::vector<cv::Point>> dummyVector;
+  dummyVector.push_back(cnt);
+  drawContours(dummyVector, hierarchy, image, "./DEBUG_findShape_contours2.png");
 
   // Get the convex hull and center
   hull = getHullFromContour(cnt);
-  center = getCenterOfHull(hull);
-  std::cout << center[0] << center[1] << std::endl;
+  center = getCenterOfHull(cnt);
+
+  std::vector<std::vector<cv::Point>> dummyVectorHull;
+  dummyVectorHull.push_back(hull);
+  drawContours(dummyVectorHull, hierarchy, image, "./DEBUG_findShape_contours3.png");
+
   return center;
 }
 
@@ -178,7 +188,6 @@ cv::Mat Image::createColorRangeMask(const cv::Mat& image, const std::vector<std:
 // Create and return a convex hull based on the biggest contour provided
 std::vector<cv::Point> Image::getHullFromContour(const std::vector<cv::Point>& cnt) {
   std::vector<cv::Point> hull;
-
   cv::convexHull(cv::Mat(cnt), hull, false);
   return hull;
 }
@@ -189,7 +198,6 @@ std::vector<int> Image::getCenterOfHull(const std::vector<cv::Point>& hull) {
 
   m = cv::moments(hull,true);
   std::vector<int> hullCenter{int(m.m10/m.m00), int(m.m01/m.m00)};
-
   return hullCenter;
 }
 
@@ -222,7 +230,17 @@ cv::Mat Image::cropImageToRect(const cv::Mat& image, const cv::Rect& boundRect) 
 
 // Sort contours by size
 bool Image::compareContourAreas (std::vector<cv::Point> contour1, std::vector<cv::Point> contour2) {
-    double i = fabs(cv::contourArea(cv::Mat(contour1)));
-    double j = fabs(cv::contourArea(cv::Mat(contour2)));
-    return ( i < j );
+  double i = fabs(cv::contourArea(cv::Mat(contour1)));
+  double j = fabs(cv::contourArea(cv::Mat(contour2)));
+  return ( i < j );
+}
+
+// Draw contours on image
+void Image::drawContours(std::vector<std::vector<cv::Point>> contours, std::vector<cv::Vec4i> hierarchy, cv::Mat inputImage, std::string outputPath) {
+  cv::Mat outputImage = inputImage.clone();
+  cv::Scalar color = cv::Scalar( 0, 0, 255 );
+  for( int i = 0; i< contours.size(); i++ ) {
+    cv::drawContours( outputImage, contours, i, color, 2, 8, std::vector<cv::Vec4i>(), 0, cv::Point() );
+  }
+  cv::imwrite(outputPath, outputImage);
 }

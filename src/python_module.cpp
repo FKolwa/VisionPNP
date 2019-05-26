@@ -4,6 +4,123 @@
 #include "../include/color.h"
 #include "../include/image.h"
 
+namespace pybind11 { namespace detail {
+
+template <> struct type_caster<cv::Mat> {
+    public:
+        /**
+         * This macro establishes the name 'inty' in
+         * function signatures and declares a local variable
+         * 'value' of type inty
+         */
+        PYBIND11_TYPE_CASTER(cv::Mat, _("numpy.ndarray"));
+
+        /**
+         * Conversion part 1 (Python->C++): convert a PyObject into a inty
+         * instance or return false upon failure. The second argument
+         * indicates whether implicit conversions should be applied.
+         */
+        bool load(handle src, bool)
+        {
+            /* Try a default converting into a Python */
+            array b(src, true);
+            buffer_info info = b.request();
+
+            int ndims = info.ndim;
+
+            decltype(CV_32F) dtype;
+            size_t elemsize;
+            if (info.format == format_descriptor<float>::format()) {
+                if (ndims == 3) {
+                    dtype = CV_32FC3;
+                } else {
+                    dtype = CV_32FC1;
+                }
+                elemsize = sizeof(float);
+            } else if (info.format == format_descriptor<double>::format()) {
+                if (ndims == 3) {
+                    dtype = CV_64FC3;
+                } else {
+                    dtype = CV_64FC1;
+                }
+                elemsize = sizeof(double);
+            } else if (info.format == format_descriptor<unsigned char>::format()) {
+                if (ndims == 3) {
+                    dtype = CV_8UC3;
+                } else {
+                    dtype = CV_8UC1;
+                }
+                elemsize = sizeof(unsigned char);
+            } else {
+                throw std::logic_error("Unsupported type");
+                return false;
+            }
+
+            std::vector<int> shape = {info.shape[0], info.shape[1]};
+
+            value = cv::Mat(cv::Size(shape[1], shape[0]), dtype, info.ptr, cv::Mat::AUTO_STEP);
+            return true;
+        }
+
+        /**
+         * Conversion part 2 (C++ -> Python): convert an inty instance into
+         * a Python object. The second and third arguments are used to
+         * indicate the return value policy and parent object (for
+         * ``return_value_policy::reference_internal``) and are generally
+         * ignored by implicit casters.
+         */
+        static handle cast(const cv::Mat &m, return_value_policy, handle defval)
+        {
+            std::string format = format_descriptor<unsigned char>::format();
+            size_t elemsize = sizeof(unsigned char);
+            int dim;
+            switch(m.type()) {
+                case CV_8U:
+                    format = format_descriptor<unsigned char>::format();
+                    elemsize = sizeof(unsigned char);
+                    dim = 2;
+                    break;
+                case CV_8UC3:
+                    format = format_descriptor<unsigned char>::format();
+                    elemsize = sizeof(unsigned char);
+                    dim = 3;
+                    break;
+                case CV_32F:
+                    format = format_descriptor<float>::format();
+                    elemsize = sizeof(float);
+                    dim = 2;
+                    break;
+                case CV_64F:
+                    format = format_descriptor<double>::format();
+                    elemsize = sizeof(double);
+                    dim = 2;
+                    break;
+                default:
+                    throw std::logic_error("Unsupported type");
+            }
+
+            std::vector<size_t> bufferdim;
+            std::vector<size_t> strides;
+            if (dim == 2) {
+                bufferdim = {(size_t) m.rows, (size_t) m.cols};
+                strides = {elemsize * (size_t) m.cols, elemsize};
+            } else if (dim == 3) {
+                bufferdim = {(size_t) m.rows, (size_t) m.cols, (size_t) 3};
+                strides = {(size_t) elemsize * m.cols * 3, (size_t) elemsize * 3, (size_t) elemsize};
+            }
+            return array(buffer_info(
+                m.data,         /* Pointer to buffer */
+                elemsize,       /* Size of one scalar */
+                format,         /* Python struct-style format descriptor */
+                dim,            /* Number of dimensions */
+                bufferdim,      /* Buffer dimensions */
+                strides         /* Strides (in bytes) for each index */
+                )).release();
+        }
+
+    };
+}} // namespace pybind11::detail
+
 namespace py = pybind11;
 
 std::string type2str(int type) {
@@ -30,132 +147,68 @@ std::string type2str(int type) {
 }
 
 //----------------------------------------------------------<
-// numpy array to Mat converter
-static cv::Mat numpyToMat(py::array input) {
-  py::buffer_info info = input.request();
-  unsigned int width = info.shape[0];
-  unsigned int height = info.shape[1];
-  auto ptr = static_cast<unsigned char *>(info.ptr);
-  int type = 0;
-  switch(info.shape[2]) {
-    case 1: type = CV_8UC1;
-      break;
-    case 2: type = CV_8UC2;
-      break;
-    case 3: type = CV_8UC3;
-      break;
-    default: type = CV_8UC1;
-  }
+// Wrappers
 
-  cv::Mat img(cv::Size(width, height), type, ptr, cv::Mat::AUTO_STEP);
-  return img;
-}
-
-//----------------------------------------------------------<
-// Wrappers for methods that expect Mat objects as arguments
-static cv::Mat pyRemoveColorRange(const py::array& inputImage, const std::vector<std::vector<int>>& colorRange) {
-  cv::Mat image = numpyToMat(inputImage);
-  return Image::removeColorRange(image, colorRange);
-}
-
-static cv::Mat pyCropImageToMask(const py::array& image, const py::array& mask) {
-  cv::Mat matImage = numpyToMat(image);
-  cv::Mat matMask = numpyToMat(mask);
-  return Image::cropImageToMask(matImage, matMask);
-}
-
-static cv::Mat pyCreateColorRangeMask(const py::array& image, const std::vector<std::vector<int>>& colorRange) {
-  cv::Mat matImage = numpyToMat(image);
-  return Image::createColorRangeMask(matImage, colorRange);
-}
-
-static std::vector<int> pyFindShape(const py::array& image) {
-  cv::Mat matImage = numpyToMat(image);
-  return Image::findShape(matImage);
-}
-
-static std::vector<int> pyFindShape(const std::string& imagePath) {
-  return Image::findShape(imagePath);
-}
-
-// static float pyMatchTemplate(const py::array& inputImage, const py::array& templateImage, const std::vector<std::vector<int>>& colorRange, const nlohmann::json config) {
-//   cv::Mat imageMat = numpyToMat(inputImage);
-//   cv::Mat tempMat = numpyToMat(templateImage);
-//   return Image::matchTemplate(imageMat, tempMat, colorRange);
-// }
-
-static float pyMatchTemplate(const std::string& imagePath, const std::string& templatePath, const std::vector<std::vector<int>>& colorRange, const std::string configPath) {
-  return Image::matchTemplate(imagePath, templatePath, colorRange, configPath);
-}
-
-static std::vector<int> pyFindContainedRect(const py::array& inputImage) {
-  cv::Mat imageMat = numpyToMat(inputImage);
-  cv::Rect bRect = Image::findContainedRect(imageMat);
-  return std::vector<int> {bRect.height, bRect.width, bRect.x, bRect.y};
-}
-
-static cv::Mat pyCropImageToRect(const py::array& inputImage, const std::vector<int> boudingRect) {
-  cv::Mat imageMat = numpyToMat(inputImage);
+static cv::Mat pyCropImageToRect(const cv::Mat& inputImage, const std::vector<int> boudingRect) {
   cv::Rect bRect;
   bRect.height = boudingRect[0];
   bRect.width = boudingRect[1];
   bRect.x = boudingRect[2];
   bRect.y = boudingRect[3];
-  return Image::cropImageToRect(imageMat, bRect);
+  return Image::cropImageToRect(inputImage, bRect);
 }
+
+static std::vector<int> pyFindContainedRect(const cv::Mat& inputImage) {
+  cv::Rect bRect = Image::findContainedRect(inputImage);
+  return std::vector<int> {bRect.height, bRect.width, bRect.x, bRect.y};
+}
+
 //----------------------------------------------------------<
 // Python module definition
 
 void initPythonBindings(py::module& m) {
-  m.def("numpyToMat", &numpyToMat);
 
   m.def("getHSVColorRange", &Color::getHSVColorRange,
     "Returns lower and upper color ranges from provided background picture.",
     py::arg("imagePath"));
 
-  // m.def("matchTemplate",
-  //   py::overload_cast<const py::array&, const py::array&, const std::vector<std::vector<int>>&>(&pyMatchTemplate),
-  //   "Detects and retrieves most likely candidate of provided template in search image.",
-  //   py::arg("inputImage"),
-  //   py::arg("templateImage"),
-  //   py::arg("colorRange"));
+  m.def("matchTemplate",
+    py::overload_cast<const cv::Mat&, const cv::Mat&, const std::vector<std::vector<int>>&, const std::string&>(&Image::matchTemplate),
+    "Detects and retrieves most likely candidate of provided template in search image.",
+    py::arg("inputImage"),
+    py::arg("templateImage"),
+    py::arg("colorRange"),
+    py::arg("pathToConfig"));
 
-  // m.def("matchTemplate",
-  //   py::overload_cast<const std::string&, const std::string&, const std::vector<std::vector<int>>&, const std::string>(&pyMatchTemplate),
-  //   "Detects and retrieves most likely candidate of provided template in search image.",
-  //   py::arg("imagePath"),
-  //   py::arg("templatePath"),
-  //   py::arg("colorRange"));
-
-  m.def("matchTemplate", &pyMatchTemplate,
+  m.def("matchTemplate",
+    py::overload_cast<const std::string&, const std::string&, const std::vector<std::vector<int>>&, const std::string&>(&Image::matchTemplate),
     "Detects and retrieves most likely candidate of provided template in search image.",
     py::arg("imagePath"),
     py::arg("templatePath"),
     py::arg("colorRange"),
-    py::arg("configPath"));
-
+    py::arg("pathToConfig"));
 
   m.def("findShape",
-    py::overload_cast<const py::array&>(&pyFindShape),
+    py::overload_cast<const cv::Mat&>(&Image::findShape),
     "Detects arbitrary shape in provided search image.",
     py::arg("inputImage"));
 
   m.def("findShape",
-    py::overload_cast<const std::string&>(&pyFindShape),
+    py::overload_cast<const std::string&>(&Image::findShape),
     "Detects arbitrary shape in provided search image.",
     py::arg("imagePath"));
 
-  m.def("removeColorRange", &pyRemoveColorRange,
+  m.def("removeColorRange", &Image::removeColorRange,
     "Removes provided HSV color range from picture",
     py::arg("inputImage"),
     py::arg("colorRange"));
 
-  m.def("cropImageToMask", &pyCropImageToMask,
+  m.def("cropImageToMask", &Image::cropImageToMask,
     "Crops image to innersize of biggest contour in provided binary mask.",
     py::arg("inputImage"),
     py::arg("mask"));
 
-  m.def("createColorRangeMask", &pyCreateColorRangeMask,
+  m.def("createColorRangeMask", &Image::createColorRangeMask,
     "Creates binary mask only containing elements contained in provided color range.",
     py::arg("inputImage"),
     py::arg("colorRange"));
@@ -168,22 +221,6 @@ void initPythonBindings(py::module& m) {
     "Crops image to bounding rect.",
     py::arg("inputImage"),
     py::arg("boundingRect"));
-
-  py::class_<cv::Mat>(m, "pyMat", py::buffer_protocol())
-    .def_buffer([](cv::Mat& im) -> py::buffer_info {
-      return py::buffer_info(
-        im.data,
-        sizeof(unsigned char),
-        py::format_descriptor<unsigned char>::format(),
-        3,
-        { im.rows, im.cols, im.channels() },
-        {
-          sizeof(unsigned char) * im.channels() * im.cols,
-          sizeof(unsigned char) * im.channels(),
-          sizeof(unsigned char)
-        }
-      );
-    });
 }
 
 // pybind11 legacy fallback

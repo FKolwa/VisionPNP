@@ -17,17 +17,17 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
   cv::Mat searchImage = removeColorRange(inputImage, colorRange);
 
   // scale images to reduce amount of pixels to compare
-  // cv::resize(outputImage, outputImage, cv::Size(), scaleFactor, scaleFactor);
+  cv::resize(outputImage, outputImage, cv::Size(), scaleFactor, scaleFactor);
 
   // Preprocess search image
   cv::cvtColor(searchImage, searchImage, cv::COLOR_BGR2GRAY);
   cv::blur(searchImage, searchImage, cv::Size( 10, 10 ));
-  // cv::resize(searchImage, searchImage, cv::Size(), scaleFactor, scaleFactor);
+  cv::resize(searchImage, searchImage, cv::Size(), scaleFactor, scaleFactor);
   cv::threshold(searchImage, searchImage, 251, 255, cv::THRESH_BINARY);
 
   // Preprocess template image
   cv::cvtColor(templateScaled, templateScaled, cv::COLOR_BGR2GRAY);
-  // cv::resize(templateScaled, templateScaled, cv::Size(), scaleFactor, scaleFactor);
+  cv::resize(templateScaled, templateScaled, cv::Size(), scaleFactor, scaleFactor);
   cv::threshold(templateScaled, templateScaled, 251, 255, cv::THRESH_BINARY);
 
   // Create and configure generalized Hough transformation
@@ -61,18 +61,18 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
 
   // Debug output
   if(DEBUG) {
-    // // Draw template on best candidate
-    // cv::Mat candidateImage;
-    // // cv::resize(templateScaled, candidateImage, cv::Size(), detected[0][2], detected[0][2]);
-    // cv::Mat rotationMatrix = cv::getRotationMatrix2D(cv::Point2f(candidateImage.rows/2, candidateImage.cols/2), detected[0][3], detected[0][2]);
-    // cv::warpAffine(candidateImage, candidateImage, rotationMatrix, cv::Size (candidateImage.rows, candidateImage.cols));
-    // cv::cvtColor(candidateImage, candidateImage, cv::COLOR_GRAY2BGR);
-    // candidateImage.copyTo(outputImage(cv::Rect(detected[0][0] - candidateImage.cols/2,detected[0][1] - candidateImage.rows/2,candidateImage.cols, candidateImage.rows)));
+    // Draw template on best candidate
+    cv::Mat candidateImage = templateScaled.clone();
+    // cv::resize(templateScaled, candidateImage, cv::Size(), detected[0][2], detected[0][2]);
+    cv::Mat rotationMatrix = cv::getRotationMatrix2D(cv::Point2f(candidateImage.rows/2, candidateImage.cols/2), detected[0][3], detected[0][2]);
+    cv::warpAffine(candidateImage, candidateImage, rotationMatrix, cv::Size (candidateImage.rows, candidateImage.cols));
+    cv::cvtColor(candidateImage, candidateImage, cv::COLOR_GRAY2BGR);
+    candidateImage.copyTo(outputImage(cv::Rect(detected[0][0] - candidateImage.cols/2,detected[0][1] - candidateImage.rows/2,candidateImage.cols, candidateImage.rows)));
     for(int i = 0; i < detected.size(); i++) {
       // Create rotated rect from position, scale and rotation
       cv::RotatedRect rect;
       rect.center = cv::Point2f(detected[i][0], detected[i][1]);
-      rect.size = cv::Size2f(templateImage.cols * detected[i][2], templateImage.rows * detected[i][2]);
+      rect.size = cv::Size2f(templateScaled.cols * detected[i][2], templateScaled.rows * detected[i][2]);
       rect.angle = detected[i][3];
 
       // Create edge points from rotated rectangle
@@ -80,7 +80,7 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
       rect.points(pts);
 
       // Draw bouding box
-      cv::Scalar color = (i == 0 ? cv::Scalar(255, 255, 0) : cv::Scalar(0, 0, 255));
+      cv::Scalar color = (i == 0 ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 255, 0));
       cv::line(outputImage, pts[0], pts[1], color, 3);
       cv::line(outputImage, pts[1], pts[2], color, 3);
       cv::line(outputImage, pts[2], pts[3], color, 3);

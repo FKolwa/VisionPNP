@@ -18,6 +18,7 @@ class Image {
     static std::vector<int> findShape(const std::string& pathToImage);
     static std::vector<int> findShape(const cv::Mat& searchImage);
     static cv::Mat removeColorRange(const cv::Mat& inputImage, const std::vector<std::vector<int>>& colorRange);
+    static cv::Mat binaryFromRange(const cv::Mat& inputImage, const std::vector<std::vector<int>>& colorRange);
     static cv::Rect findContainedRect(const cv::Mat& mask);
     static cv::Mat cropImageToRect(const cv::Mat& image, const cv::Rect& boudingRect);
     static cv::Mat cropImageToMask(const cv::Mat& image, const cv::Mat& mask);

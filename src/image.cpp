@@ -14,16 +14,19 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
 
   cv::Mat outputImage = inputImage.clone();
   cv::Mat templateScaled = templateImage.clone();
-  cv::Mat searchImage = removeColorRange(inputImage, colorRange);
+  cv::Mat searchImage = binaryFromRange(inputImage, colorRange);
 
   // scale images to reduce amount of pixels to compare
   cv::resize(outputImage, outputImage, cv::Size(), scaleFactor, scaleFactor);
 
+  // Use morphology to clean the image
+  cv::Mat kernel = cv::Mat::ones( 16, 16, CV_32F );
+  cv::morphologyEx( searchImage, searchImage, cv::MORPH_OPEN, kernel );
+  cv::morphologyEx( searchImage, searchImage, cv::MORPH_CLOSE, kernel );
+
   // Preprocess search image
-  cv::cvtColor(searchImage, searchImage, cv::COLOR_BGR2GRAY);
-  cv::blur(searchImage, searchImage, cv::Size( 10, 10 ));
   cv::resize(searchImage, searchImage, cv::Size(), scaleFactor, scaleFactor);
-  cv::threshold(searchImage, searchImage, 251, 255, cv::THRESH_BINARY);
+  cv::imwrite("./searchimage_debug.png", searchImage);
 
   // Preprocess template image
   cv::cvtColor(templateScaled, templateScaled, cv::COLOR_BGR2GRAY);
@@ -171,6 +174,21 @@ cv::Mat Image::removeColorRange(const cv::Mat& inputImage, const std::vector<std
   cv::cvtColor(inputImage, imageHSV, cv::COLOR_BGR2HSV);
   cv::inRange(imageHSV, colorRange[0], colorRange[1], mask);
   workingCopy.setTo(cv::Scalar(255,255,255), mask);
+
+  return workingCopy;
+}
+
+// Binarizes image based on color range
+cv::Mat Image::binaryFromRange(const cv::Mat& inputImage, const std::vector<std::vector<int>>& colorRange) {
+  // cv::Mat workingCopy(inputImage.rows, inputImage.cols, CV_8UC1, 0);
+  cv::Mat workingCopy = cv::Mat::zeros(inputImage.rows, inputImage.cols, CV_8UC1);
+  cv::Mat imageHSV;
+  cv::Mat mask;
+
+  // apply retrived color range on image
+  cv::cvtColor(inputImage, imageHSV, cv::COLOR_BGR2HSV);
+  cv::inRange(imageHSV, colorRange[0], colorRange[1], mask);
+  workingCopy.setTo(255, mask);
 
   return workingCopy;
 }

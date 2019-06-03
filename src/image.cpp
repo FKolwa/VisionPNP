@@ -5,6 +5,7 @@
 float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const std::string& configPath) {
   bool DEBUG = true;
   float scaleFactor = 0.25;
+  float angle = 0.0;
   std::vector<cv::Vec4f> detected;
   cv::TickMeter tm;
 
@@ -17,32 +18,46 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
   cv::Mat searchImage = binaryFromRange(inputImage, colorRange);
 
   // scale images to reduce amount of pixels to compare
-  cv::resize(outputImage, outputImage, cv::Size(), scaleFactor, scaleFactor);
+  // cv::resize(outputImage, outputImage, cv::Size(), scaleFactor, scaleFactor);
 
   // Use morphology to clean the image
   cv::Mat kernel = cv::Mat::ones( 16, 16, CV_32F );
   cv::morphologyEx( searchImage, searchImage, cv::MORPH_OPEN, kernel );
   cv::morphologyEx( searchImage, searchImage, cv::MORPH_CLOSE, kernel );
 
+  //TEST TODO:REMOVE
+  // Detect edges using canny edge detector
+  cv::Mat  templateCanny, searchCanny;
+  cv::Canny( searchImage, searchCanny, 254, 255, 3 );
+  cv::Canny( templateImage, templateCanny, 254, 255, 3 );
+
   // Preprocess search image
-  cv::resize(searchImage, searchImage, cv::Size(), scaleFactor, scaleFactor);
-  cv::imwrite("./searchimage_debug.png", searchImage);
+  // cv::resize(searchImage, searchImage, cv::Size(), scaleFactor, scaleFactor);
+  if(DEBUG) {
+    cv::imwrite("./searchimage_debug.png", searchImage);
+    cv::imwrite("./DEBUG_searchImageCanny.png", searchCanny);
+    cv::imwrite("./DEBUG_templateImageCanny.png", templateCanny);
+  }
 
   // Preprocess template image
-  cv::cvtColor(templateScaled, templateScaled, cv::COLOR_BGR2GRAY);
-  cv::resize(templateScaled, templateScaled, cv::Size(), scaleFactor, scaleFactor);
-  cv::threshold(templateScaled, templateScaled, 251, 255, cv::THRESH_BINARY);
+  // cv::cvtColor(templateScaled, templateScaled, cv::COLOR_BGR2GRAY);
+  // cv::resize(templateScaled, templateScaled, cv::Size(), scaleFactor, scaleFactor);
+  // cv::threshold(templateScaled, templateScaled, 251, 255, cv::THRESH_BINARY);
 
   // Create and configure generalized Hough transformation
   cv::Ptr<cv::GeneralizedHoughGuil> guil = cv::createGeneralizedHoughGuil();
   guil->setMinDist(config["MinDist"]);
   guil->setLevels(config["Levels"]);
   guil->setDp(config["Dp"]);
+  guil->setCannyHighThresh(255);
+  guil->setCannyLowThresh(254);
+
   guil->setMaxBufferSize(config["MaxBufferSize"]);
 
   guil->setMinAngle(config["MinAngle"]);
   guil->setMaxAngle(config["MaxAngle"]);
   guil->setAngleStep(config["AngleStep"]);
+  guil->setAngleEpsilon(config["AngleEpsilon"]);
   guil->setAngleThresh(config["AngleThresh"]);
 
   guil->setMinScale(config["MinScale"]);
@@ -51,7 +66,7 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
   guil->setScaleThresh(config["ScaleThresh"]);
 
   guil->setPosThresh(config["PosThresh"]);
-  guil->setTemplate(templateScaled);
+  guil->setTemplate(templateImage);
 
   // Detect template in preprocessed image
   std::cout << "Start detecting" << std::endl;
@@ -62,44 +77,40 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
 
   tm.stop();
 
-  // Debug output
-  if(DEBUG) {
-    // Draw template on best candidate
-    cv::Mat candidateImage = templateScaled.clone();
-    // cv::resize(templateScaled, candidateImage, cv::Size(), detected[0][2], detected[0][2]);
-    cv::Mat rotationMatrix = cv::getRotationMatrix2D(cv::Point2f(candidateImage.rows/2, candidateImage.cols/2), detected[0][3], detected[0][2]);
-    cv::warpAffine(candidateImage, candidateImage, rotationMatrix, cv::Size (candidateImage.rows, candidateImage.cols));
-    cv::cvtColor(candidateImage, candidateImage, cv::COLOR_GRAY2BGR);
-    candidateImage.copyTo(outputImage(cv::Rect(detected[0][0] - candidateImage.cols/2,detected[0][1] - candidateImage.rows/2,candidateImage.cols, candidateImage.rows)));
-    for(int i = 0; i < detected.size(); i++) {
-      // Create rotated rect from position, scale and rotation
-      cv::RotatedRect rect;
-      rect.center = cv::Point2f(detected[i][0], detected[i][1]);
-      rect.size = cv::Size2f(templateScaled.cols * detected[i][2], templateScaled.rows * detected[i][2]);
-      rect.angle = detected[i][3];
-
-      // Create edge points from rotated rectangle
-      cv::Point2f pts[4];
-      rect.points(pts);
-
-      // Draw bouding box
-      cv::Scalar color = (i == 0 ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 255, 0));
-      cv::line(outputImage, pts[0], pts[1], color, 3);
-      cv::line(outputImage, pts[1], pts[2], color, 3);
-      cv::line(outputImage, pts[2], pts[3], color, 3);
-      cv::line(outputImage, pts[3], pts[0], color, 3);
-
-    }
-    std::cout << "Found : " << detected.size() << " objects" << std::endl;
-    std::cout << "Detection time : " << tm.getTimeMilli() << " ms" << std::endl;
-    std::cout << "Position: " << detected[0][0] << " " << detected[0][1] << std::endl;
-    std::cout << "Scale: " << detected[0][2] << std::endl;
-    std::cout << "Rotation: " << detected[0][3] << std::endl;
-    cv::imwrite("result.png", outputImage);
-  }
-
+  if(detected.size() > 0) {
   // candidate with highest vote at start of returned vector
-  float angle = detected[0][3];
+  angle = detected[0][3];
+    // Debug output
+    if(DEBUG) {
+      for(int i = 0; i < detected.size(); i++) {
+        // Create rotated rect from position, scale and rotation
+        cv::RotatedRect rect;
+        rect.center = cv::Point2f(detected[i][0], detected[i][1]);
+        rect.size = cv::Size2f(templateScaled.cols * detected[i][2], templateScaled.rows * detected[i][2]);
+        rect.angle = detected[i][3];
+
+        // Create edge points from rotated rectangle
+        cv::Point2f pts[4];
+        rect.points(pts);
+
+        // Draw bouding box
+        cv::Scalar color = (i == 0 ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 255, 0));
+        cv::line(outputImage, pts[0], pts[1], color, 3);
+        cv::line(outputImage, pts[1], pts[2], color, 3);
+        cv::line(outputImage, pts[2], pts[3], color, 3);
+        cv::line(outputImage, pts[3], pts[0], color, 3);
+
+      }
+      std::cout << "Found : " << detected.size() << " objects" << std::endl;
+      std::cout << "Detection time : " << tm.getTimeMilli() << " ms" << std::endl;
+      std::cout << "Position: " << detected[0][0] << " " << detected[0][1] << std::endl;
+      std::cout << "Scale: " << detected[0][2] << std::endl;
+      std::cout << "Rotation: " << detected[0][3] << std::endl;
+      cv::imwrite("result.png", outputImage);
+    }
+  } else {
+    std::cout << "Could not detect template in search image" << std::endl;
+  }
 
   return angle;
 }

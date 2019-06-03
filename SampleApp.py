@@ -5,8 +5,8 @@ import numpy as np
 #---------<
 # Input images
 headCamImage = cv2.imread('./resources/tiny_on_tray.png')
-bedCamImage = cv2.imread('./resources/tiny_on_gripper.png')
-templateImage = cv2.imread('./resources/template_fake.png')
+bedCamImage = cv2.imread('./resources/resistor_on_gripper.png')
+templateImage = cv2.imread('./resources/template_output_resistor.png', cv2.IMREAD_GRAYSCALE)
 
 #---------<
 # Scenario 1 - Find position of object in tray picture

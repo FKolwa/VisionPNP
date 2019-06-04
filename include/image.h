@@ -28,5 +28,6 @@ class Image {
     static std::vector<int> getCenterOfHull(const std::vector<cv::Point>& hull);
     static bool compareContourAreas (std::vector<cv::Point> contour1, std::vector<cv::Point> contour2);
     static void drawContours(std::vector<std::vector<cv::Point>> contours, std::vector<cv::Vec4i> hierarchy, cv::Mat inputImage, std::string outputPath);
+    static std::string getMatType(int type);
 };
 #endif

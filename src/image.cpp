@@ -15,28 +15,34 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
 
   cv::Mat outputImage = inputImage.clone();
   cv::Mat templateScaled = templateImage.clone();
-  cv::Mat searchImage = binaryFromRange(inputImage, colorRange);
+  cv::Mat searchImage;
+
+  // In case the input image is already binarized
+  if(inputImage.type() > 6) {
+    searchImage = binaryFromRange(inputImage, colorRange);
+  } else {
+    searchImage = inputImage.clone();
+  }
 
   // scale images to reduce amount of pixels to compare
-  // cv::resize(outputImage, outputImage, cv::Size(), scaleFactor, scaleFactor);
+  cv::resize(outputImage, outputImage, cv::Size(), scaleFactor, scaleFactor);
 
   // Use morphology to clean the image
-  cv::Mat kernel = cv::Mat::ones( 16, 16, CV_32F );
+  cv::Mat kernel = cv::Mat::ones( 8, 8, CV_32F );
   cv::morphologyEx( searchImage, searchImage, cv::MORPH_OPEN, kernel );
   cv::morphologyEx( searchImage, searchImage, cv::MORPH_CLOSE, kernel );
-
-  //TEST TODO:REMOVE
-  // Detect edges using canny edge detector
-  cv::Mat  templateCanny, searchCanny;
-  cv::Canny( searchImage, searchCanny, 254, 255, 3 );
-  cv::Canny( templateImage, templateCanny, 254, 255, 3 );
+  cv::blur(searchImage, searchImage, cv::Size(6,6));
+  // cv::blur(templateImage, templateImage, cv::Size(6,6));
 
   // Preprocess search image
-  // cv::resize(searchImage, searchImage, cv::Size(), scaleFactor, scaleFactor);
+  cv::resize(searchImage, searchImage, cv::Size(), scaleFactor, scaleFactor);
   if(DEBUG) {
-    cv::imwrite("./searchimage_debug.png", searchImage);
-    cv::imwrite("./DEBUG_searchImageCanny.png", searchCanny);
-    cv::imwrite("./DEBUG_templateImageCanny.png", templateCanny);
+    cv::Mat  templateCanny, searchCanny;
+    cv::Canny( searchImage, searchCanny, 254, 255, 3 );
+    cv::Canny( templateImage, templateCanny, 254, 255, 3 );
+    cv::imwrite("./DEBUG_matchTemplate_01.png", searchImage);
+    cv::imwrite("./DEBUG_matchTemplate_02.png", searchCanny);
+    cv::imwrite("./DEBUG_matchTemplate_03.png", templateCanny);
   }
 
   // Preprocess template image
@@ -48,25 +54,25 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
   cv::Ptr<cv::GeneralizedHoughGuil> guil = cv::createGeneralizedHoughGuil();
   guil->setMinDist(config["MinDist"]);
   guil->setLevels(config["Levels"]);
-  guil->setDp(config["Dp"]);
-  guil->setCannyHighThresh(255);
-  guil->setCannyLowThresh(254);
+  // guil->setDp(config["Dp"]);
+  // guil->setCannyHighThresh(255);
+  // guil->setCannyLowThresh(254);
 
-  guil->setMaxBufferSize(config["MaxBufferSize"]);
-
+  // guil->setMaxBufferSize(config["MaxBufferSize"]);
+  // guil->setXi(config["Xi"]);
   guil->setMinAngle(config["MinAngle"]);
   guil->setMaxAngle(config["MaxAngle"]);
   guil->setAngleStep(config["AngleStep"]);
   guil->setAngleEpsilon(config["AngleEpsilon"]);
-  guil->setAngleThresh(config["AngleThresh"]);
+  // guil->setAngleThresh(config["AngleThresh"]);
 
   guil->setMinScale(config["MinScale"]);
   guil->setMaxScale(config["MaxScale"]);
   guil->setScaleStep(config["ScaleStep"]);
-  guil->setScaleThresh(config["ScaleThresh"]);
+  // guil->setScaleThresh(config["ScaleThresh"]);
 
-  guil->setPosThresh(config["PosThresh"]);
-  guil->setTemplate(templateImage);
+  // guil->setPosThresh(config["PosThresh"]);
+  guil->setTemplate(templateImage, cv::Point(templateImage.cols/2, templateImage.rows/2));
 
   // Detect template in preprocessed image
   std::cout << "Start detecting" << std::endl;
@@ -106,7 +112,7 @@ float Image::matchTemplate(const cv::Mat& inputImage, const cv::Mat& templateIma
       std::cout << "Position: " << detected[0][0] << " " << detected[0][1] << std::endl;
       std::cout << "Scale: " << detected[0][2] << std::endl;
       std::cout << "Rotation: " << detected[0][3] << std::endl;
-      cv::imwrite("result.png", outputImage);
+      cv::imwrite("DEBUG_matchTemplate_04.png", outputImage);
     }
   } else {
     std::cout << "Could not detect template in search image" << std::endl;
@@ -124,6 +130,7 @@ float Image::matchTemplate(const std::string& pathToSearchImage, const std::stri
 //--------------------------------------------------------<
 // Find shape in image and return position
 std::vector<int> Image::findShape(const cv::Mat& image) {
+  bool DEBUG = false;
   cv::Mat grayImage, blurImage, thresholdImage, kernel, openImage, closedImage, cannyImage;
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Point> hull;
@@ -131,7 +138,12 @@ std::vector<int> Image::findShape(const cv::Mat& image) {
   std::vector<int> center;
 
   // Create threshold image
-  cv::cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);
+  if(image.type() > 6) { // More than one channel
+    cv::cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);
+  } else {
+    grayImage = image.clone();
+  }
+
   cv::blur(grayImage, blurImage, cv::Size(5, 5));
   cv::threshold(blurImage, thresholdImage, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
 
@@ -146,15 +158,11 @@ std::vector<int> Image::findShape(const cv::Mat& image) {
   // find contours
   cv::findContours(cannyImage, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
-  // Draw contours for debugging
-  drawContours(contours, hierarchy, image, "./DEBUG_findShape_contours.png");
-
   // Find biggest contour
   sort(contours.begin(), contours.end(), compareContourAreas);
   std::vector<cv::Point> cnt = contours[contours.size()-1];
   std::vector<std::vector<cv::Point>> dummyVector;
   dummyVector.push_back(cnt);
-  drawContours(dummyVector, hierarchy, image, "./DEBUG_findShape_contours2.png");
 
   // Get the convex hull and center
   hull = getHullFromContour(cnt);
@@ -162,7 +170,13 @@ std::vector<int> Image::findShape(const cv::Mat& image) {
 
   std::vector<std::vector<cv::Point>> dummyVectorHull;
   dummyVectorHull.push_back(hull);
-  drawContours(dummyVectorHull, hierarchy, image, "./DEBUG_findShape_contours3.png");
+
+  if(DEBUG) {
+    // Draw contours for debugging
+    drawContours(contours, hierarchy, image, "./DEBUG_findShape_contours_01.png");
+    drawContours(dummyVector, hierarchy, image, "./DEBUG_findShape_contours_02.png");
+    drawContours(dummyVectorHull, hierarchy, image, "./DEBUG_findShape_contours_03.png");
+  }
 
   return center;
 }
@@ -272,4 +286,27 @@ void Image::drawContours(std::vector<std::vector<cv::Point>> contours, std::vect
     cv::drawContours( outputImage, contours, i, color, 2, 8, std::vector<cv::Vec4i>(), 0, cv::Point() );
   }
   cv::imwrite(outputPath, outputImage);
+}
+
+std::string Image::getMatType(int type) {
+  std::string r;
+
+  uchar depth = type & CV_MAT_DEPTH_MASK;
+  uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+  switch ( depth ) {
+    case CV_8U:  r = "8U"; break;
+    case CV_8S:  r = "8S"; break;
+    case CV_16U: r = "16U"; break;
+    case CV_16S: r = "16S"; break;
+    case CV_32S: r = "32S"; break;
+    case CV_32F: r = "32F"; break;
+    case CV_64F: r = "64F"; break;
+    default:     r = "User"; break;
+  }
+
+  r += "C";
+  r += (chans+'0');
+
+  return r;
 }

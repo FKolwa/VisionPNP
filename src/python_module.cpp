@@ -3,6 +3,7 @@
 #include <pybind11/numpy.h>
 #include "../include/color.h"
 #include "../include/image.h"
+#include "../include/hough.h"
 
 namespace pybind11 { namespace detail {
 
@@ -149,21 +150,28 @@ void initPythonBindings(py::module& m) {
     "Returns lower and upper color ranges from provided background picture.",
     py::arg("imagePath"));
 
-  m.def("matchTemplate",
-    py::overload_cast<const cv::Mat&, const cv::Mat&, const std::vector<std::vector<int>>&, const std::string&>(&Image::matchTemplate),
-    "Detects and retrieves most likely candidate of provided template in search image.",
-    py::arg("inputImage"),
-    py::arg("templateImage"),
-    py::arg("colorRange"),
-    py::arg("pathToConfig"));
+  // m.def("matchTemplate",
+  //   py::overload_cast<const cv::Mat&, const cv::Mat&, const std::vector<std::vector<int>>&, const std::string&>(&Image::matchTemplate),
+  //   "Detects and retrieves most likely candidate of provided template in search image.",
+  //   py::arg("inputImage"),
+  //   py::arg("templateImage"),
+  //   py::arg("colorRange"),
+  //   py::arg("pathToConfig"));
 
-  m.def("matchTemplate",
-    py::overload_cast<const std::string&, const std::string&, const std::vector<std::vector<int>>&, const std::string&>(&Image::matchTemplate),
-    "Detects and retrieves most likely candidate of provided template in search image.",
+  // m.def("matchTemplate",
+  //   py::overload_cast<const std::string&, const std::string&, const std::vector<std::vector<int>>&, const std::string&>(&Image::matchTemplate),
+  //   "Detects and retrieves most likely candidate of provided template in search image.",
+  //   py::arg("imagePath"),
+  //   py::arg("templatePath"),
+  //   py::arg("colorRange"),
+  //   py::arg("pathToConfig"));
+
+  m.def("matchTemplate", &Hough::matchTemplate,
+    "Detects and retrieves most orientation of provided template in search image.",
     py::arg("imagePath"),
     py::arg("templatePath"),
     py::arg("colorRange"),
-    py::arg("pathToConfig"));
+    py::arg("expectedSize")=0);
 
   m.def("findShape",
     py::overload_cast<const cv::Mat&>(&Image::findShape),
@@ -218,3 +226,4 @@ PYBIND11_MODULE(VisionPNP, m) {
   initPythonBindings(m);
 }
 #endif
+

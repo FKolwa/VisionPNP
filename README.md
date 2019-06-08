@@ -27,8 +27,9 @@ python -m pip install -e . --user
 ```
 for python 2.7 or
 ```
-python3 -m pip install -e . --user for python >= 3.0
+python3 -m pip install -e . --user
 ```
+for python >= 3.0.
 Once the installation is complete make sure the module is recognized by python:
 ```
 python -m pip list
@@ -48,11 +49,11 @@ import VisionPNP
 
 maskValues = VisionPNP.getHSVColorRange('./images/gripper.png')
 ```
-For a example application take a look at *SampleApp.py*.
+For a example scenarios take a look at *SampleApp.py*.
 
 # Troubleshooting
 ## Problem -  Python can't find a library / missing symbol ImportError
-The missing library cannot be found in the provided librray folder or is
+The missing library cannot be found in the provided library folder or is
 otherwise unknown and can't be linked. Setup.py finishes successfully but throws
 an ImportError once imported into a python script.
 Example :

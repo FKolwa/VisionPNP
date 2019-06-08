@@ -58,5 +58,8 @@ print(center)
 # Find a binary template inside a provided input image.
 # The maskValues contain the color range of the background color for easier seperation.
 # Return its orientation.
-orientation = VisionPNP.matchTemplate(bedCamImageMatchTemplate, templateImage, maskValues, './resources/houghConfig.json')
+searchImageCopy = cv2.imread("./resources/input1.png")
+templateImageCopy = cv2.imread("./resources/temp1.png")
+
+orientation = VisionPNP.matchTemplate(searchImageCopy, templateImageCopy, maskValues)
 print(orientation)

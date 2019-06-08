@@ -206,16 +206,25 @@ cv::Mat Image::removeColorRange(const cv::Mat& inputImage, const std::vector<std
 // Binarizes image based on color range
 cv::Mat Image::binaryFromRange(const cv::Mat& inputImage, const std::vector<std::vector<int>>& colorRange) {
   // cv::Mat workingCopy(inputImage.rows, inputImage.cols, CV_8UC1, 0);
-  cv::Mat workingCopy = cv::Mat::zeros(inputImage.rows, inputImage.cols, CV_8UC1);
+  // cv::Mat workingCopy = cv::Mat::zeros(inputImage.rows, inputImage.cols, CV_8UC1);
+  cv::Mat black(inputImage.rows, inputImage.cols, CV_8UC1, 0);
+  // cv::Mat white(inputImage.rows, inputImage.cols, CV_8UC1, 255);
+  // cv::Mat workingCopy = inputImage.clone();
+  // workingCopy.create( cv::Size(inputImage.cols, inputImage.rows), CV_8UC3);
   cv::Mat imageHSV;
   cv::Mat mask;
 
   // apply retrived color range on image
   cv::cvtColor(inputImage, imageHSV, cv::COLOR_BGR2HSV);
   cv::inRange(imageHSV, colorRange[0], colorRange[1], mask);
-  workingCopy.setTo(255, mask);
+  //workingCopy.setTo(255, mask);
+  // inputImage.copyTo(workingCopy, mask);
+  black.setTo(255, mask);
+  //mask.copyTo(white, black);
+  cv::imwrite("./maskimage.png", black);
+  // workingCopy.setTo(0, mask);
 
-  return workingCopy;
+  return black;
 }
 
 // Extracts areas within the provided color range and returns binarized mask containing these areas

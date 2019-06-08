@@ -9,6 +9,7 @@ module = Extension(
       './src/python_module.cpp',
       './src/color.cpp',
       './src/image.cpp',
+      './src/hough.cpp'
     ],
     include_dirs = [
       '/usr/local/include/pybind11',
@@ -28,7 +29,7 @@ module = Extension(
 
 setup(
     name = 'VisionPNP',
-    version = '1.0',
+    version = '0.1',
     description = 'TODO',
     install_requires=[
         'pybind11'

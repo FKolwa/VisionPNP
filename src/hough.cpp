@@ -6,66 +6,73 @@ std::vector<Rpoint> Hough::pts;
 cv::Mat Hough::accum;
 int Hough::wmin = 0;
 int Hough::wmax = 0;
-float Hough::phimin = -PI/2;
-float Hough::phimax = PI/2;
+float Hough::phimin = -PI*0.25f;
+float Hough::phimax = PI*0.25f;
 int Hough::rangeXY = 1;
 int Hough::rangeS = 1;
-int Hough::intervals = 128;
+int Hough::intervals = 256;
 int Hough::wtemplate = 0;
+int Hough::ctemplate[2] = {0, 0};
 
 // save file with canny edge of the original image
 void Hough::createRtable(const cv::Mat& templateImage){
   cv::Mat cannyImage = templateImage.clone();
-  cv::imwrite("./dummyloadedshit.png", cannyImage);
-  std::cout << "gray" << std::endl;
   if(cannyImage.type() > 6) {
     cv::cvtColor(cannyImage, cannyImage, cv::COLOR_BGR2GRAY);
   }
-  std::cout << "blut" << std::endl;
-  cv::blur(cannyImage, cannyImage, cv::Size(3,3) );
-  std::cout << "canny" << std::endl;
-  cv::Canny(cannyImage, cannyImage, 50, 100);
 
+  // detect edges
+  cv::Canny(cannyImage, cannyImage, 0, 1);
 
-  std::cout << "readPoints" << std::endl;
+  // Use morphology to clean the image
+  cv::Mat kernel = cv::Mat::ones( 8, 8, CV_32F );
+  cv::morphologyEx( cannyImage, cannyImage, cv::MORPH_CLOSE, kernel );
+
+  cv::imwrite("./canny1.png", cannyImage);
+
+  // load points from image andreate the rtable
   readPoints(templateImage, cannyImage);
-  std::cout << "readRtable" << std::endl;
   readRtable();
 }
 
 // fill accumulator matrix
 void Hough::accumulate(const cv::Mat& searchImage){
-  // transform image to grayscale:
-  cv::Mat src_gray;
-  src_gray.create( cv::Size(searchImage.cols, searchImage.rows), CV_8UC1);
+  cv::Mat searchImageCopy = searchImage.clone();
+  cv::Mat cannyImage;
+  cv::Mat dx, dy;
 
-  if(searchImage.type() > 6) {
-    cv::cvtColor(searchImage, src_gray, cv::COLOR_BGR2GRAY);
+  cv::imwrite("./acc.png", searchImageCopy);
+
+  // transform image to grayscale if necessary
+  if(searchImageCopy.type() > 6) {
+    cv::cvtColor(searchImageCopy, searchImageCopy, cv::COLOR_BGR2GRAY);
   }
 
-  // reduce noise with a kernel 3x3 and get cannyedge image:
-  cv::Mat detected_edges;
-  cv::blur( src_gray, detected_edges, cv::Size(3,3) );
-  cv::Canny( detected_edges, detected_edges, 0, 1, 3 );
+  // detect edges
+  cv::Canny(searchImageCopy, cannyImage, 0, 1);
+  cv::imwrite("./acc3.png", cannyImage);
 
   // get Scharr matrices from image to obtain contour gradients
-  cv::Mat dx;
   dx.create( cv::Size(searchImage.cols, searchImage.rows), CV_16SC1);
-  cv::Sobel(src_gray, dx, CV_16S, 1, 0, cv::FILTER_SCHARR);
-  cv::Mat dy;
+  // cv::Sobel(searchImageCopy, dx, CV_16S, 1, 0);
+  cv::Scharr(searchImageCopy, dx, CV_16S, 1, 0);
   dy.create( cv::Size(searchImage.cols, searchImage.rows), CV_16SC1);
-  cv::Sobel(src_gray, dy, CV_16S, 0, 1, cv::FILTER_SCHARR);
+  // cv::Sobel(searchImageCopy, dy, CV_16S, 0, 1);
+  cv::Scharr(searchImageCopy, dy, CV_16S, 0, 1);
+
+  cv::imwrite("./acc1.png", dx);
+  cv::imwrite("./acc2.png", dy);
 
   // load all points from image all image contours on vector pts2
-  int nl= detected_edges.rows;
-  int nc= detected_edges.cols;
+  int nl= cannyImage.rows;
+  int nc= cannyImage.cols;
   float deltaphi = PI/intervals;
   float inv_deltaphi = (float)intervals/PI;
   float inv_rangeXY = (float)1/rangeXY;
   float PI_half = PI*0.5f;
   std::vector<Rpoint2> pts2;
   for (int j=0; j<nl; ++j) {
-    uchar* data= (uchar*)(detected_edges.data + detected_edges.step.p[0]*j);
+    uchar* data= (uchar*)(cannyImage.data + cannyImage.step.p[0]*j);
     for (int i=0; i<nc; ++i) {
       if ( data[i]==255  ) // consider only white points (contour)
       {
@@ -141,10 +148,11 @@ void Hough::accumulate(const cv::Mat& searchImage){
   }
 }
 
-// show the best candidate detected on image
-float Hough::bestCandidate(const cv::Mat& searchImage){
+// return the best candidate detected in image
+std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage){
+  static std::vector<float> bestCandidate;
   cv::Mat showImage;
-
+  // Convert showImage if necessary
   if(searchImage.type() < 6) {
     cv::cvtColor(searchImage, showImage, cv::COLOR_GRAY2BGR);
   } else {
@@ -172,19 +180,10 @@ float Hough::bestCandidate(const cv::Mat& searchImage){
   float angle = reff*deltaphi;
   float cs = cos(angle);
   float sn = sin(angle);
-  int w = wmin + id_max[2]*rangeS;
-  float wratio = (float)w/(wtemplate);
+  int size = wmin + id_max[2]*rangeS;
+  float wratio = (float)size/(wtemplate);
 
-  std::cout << "Rotation in radians: " << angle << std::endl;
-
-  int dx = roundToInt(wratio*(cs*referenceP[0] - sn*referenceP[1]));
-  int dy = roundToInt(wratio*(sn*referenceP[0] + cs*referenceP[1]));
-  // int x = referenceP[0] - dx;
-  // int y = referenceP[1] - dy;
-  // showImage.at<Vec3b>(dx, dy) = Vec3b(0, 0, 255);
-  std::cout << "Position: " << dx << " " << dy << std::endl;
-  std::cout << "Scale: " << wmin + (id_max[3]*rangeS) << std::endl;
-
+  // Draw candidate in output image
   for (std::vector<std::vector<cv::Vec2i>>::size_type ii = 0; ii < Rtable.size(); ++ii){
     for (std::vector<cv::Vec2i>::size_type jj= 0; jj < Rtable[ii].size(); ++jj){
       int dx = roundToInt(wratio*(cs*Rtable[ii][jj][0] - sn*Rtable[ii][jj][1]));
@@ -196,8 +195,30 @@ float Hough::bestCandidate(const cv::Mat& searchImage){
       }
     }
   }
+
+  // Draw center point
+  int dx = roundToInt(wratio*(cs*Hough::ctemplate[0] - sn*Hough::ctemplate[1]));
+  int dy = roundToInt(wratio*(sn*Hough::ctemplate[0] + cs*Hough::ctemplate[1]));
+  int x = dx;
+  int y = dy;
+  if ( (x<nc)&&(y<nl)&&(x>-1)&&(y>-1) ){
+    showImage.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 0, 255);
+  }
+
+  // debug output
+  std::cout << "Objects found: " << accum.size() << std::endl;
+  std::cout << "Rotation in radians: " << angle << std::endl;
+  std::cout << "Position: " << x << " " << y << std::endl;
+  std::cout << "Scale: " << size << std::endl;
   cv::imwrite("./result.png", showImage);
-  return angle;
+
+  // assemble return value
+  bestCandidate.push_back(referenceP[0]);
+  bestCandidate.push_back(referenceP[1]);
+  bestCandidate.push_back(size);
+  bestCandidate.push_back(angle);
+
+  return bestCandidate;
 }
 
 // load vector pts with all points from the contour
@@ -213,13 +234,12 @@ void Hough::readPoints(const cv::Mat& original_img, const cv::Mat& contour_img){
   if(original_img.type() > 6) {
     cvtColor(original_img, input_img_gray, cv::COLOR_BGR2GRAY);
   }
-  //Mat template_img = imread("files\\contour_def.bmp", 1);
-
   // find reference point inside contour image and save it in variable refPoint
-  int nl= template_img.rows;
-  int nc= template_img.cols;
-  // refPoint = Vec2i(template_img.cols/2,template_img.rows/2);
+  int nl= original_img.rows;
+  int nc= original_img.cols;
   cv::Vec2i refPoint = cv::Vec2i(0,0);
+  Hough::ctemplate[0] = int(nc/2);
+  Hough::ctemplate[1] = int(nl/2);
 
   // get Scharr matrices from original template image to obtain contour gradients
   cv::Mat dx;
@@ -271,36 +291,21 @@ void Hough::readRtable(){
   }
 }
 
-float Hough::matchTemplate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const int expectedSize=0) {
+std::vector<float> Hough::matchTemplate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const int expectedSize=-1) {
   // Create a workcopy
   cv::Mat searchImageCopy = searchImage.clone();
   cv::Mat templateImageCopy = templateImage.clone();
 
-  // For time measuring
-  cv::TickMeter tm;
-
   // Set size of anticipated template in search image including small offset
-  // Hough::wmin = expectedSize-(expectedSize*0.1);
-  // Hough::wmax = expectedSize == 0 ? std::min(searchImageCopy.cols, searchImageCopy.rows) : expectedSize+(expectedSize*0.1);
-  Hough::wmin = 20;
-  Hough::wmax = 200;
-  cv::Mat dummyCopy;
+
   // In case the input image is already binarized
   if(searchImageCopy.type() > 6) {
-    dummyCopy = Image::binaryFromRange(searchImageCopy, colorRange);
-    // cv::cvtColor(dummyCopy, dummyCopy, cv::COLOR_GRAY2BGR);
+    searchImageCopy = Image::binaryFromRange(searchImageCopy, colorRange);
   }
-
-  // Use morphology to clean the image
-  // cv::Mat kernel = cv::Mat::ones( 8, 8, CV_32F );
-  // cv::morphologyEx( searchImageCopy, searchImageCopy, cv::MORPH_OPEN, kernel );
-  // cv::morphologyEx( searchImageCopy, searchImageCopy, cv::MORPH_CLOSE, kernel );
-
-  // cv::resize(searchImageCopy, searchImageCopy, cv::Size(200, 200));
-  // cv::resize(templateImageCopy, templateImageCopy, cv::Size(200, 200));
-
-  // cv::imwrite("./binarySearch.png", searchImageCopy);
-
+  cv::resize(searchImageCopy, searchImageCopy, cv::Size(200,200));
+  cv::resize(templateImageCopy, templateImageCopy, cv::Size(200,200));
+  Hough::wmin = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) / 2 : expectedSize-(expectedSize*0.1);
+  Hough::wmax = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) : expectedSize+(expectedSize*0.1);
 
   std::cout << "createRTable" << std::endl;
   // create the Rtable from template
@@ -308,11 +313,12 @@ float Hough::matchTemplate(const cv::Mat& searchImage, const cv::Mat& templateIm
 
   std::cout << "accumulate" << std::endl;
   // match template with search image
-  accumulate(dummyCopy);
+  accumulate(searchImageCopy);
 
   // Find best candidate and return orientation
   cv::Mat displayCopy = searchImage.clone();
   cv::resize(displayCopy, displayCopy, cv::Size(200, 200));
   return bestCandidate(displayCopy);
 }
+
 

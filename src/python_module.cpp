@@ -171,7 +171,7 @@ void initPythonBindings(py::module& m) {
     py::arg("imagePath"),
     py::arg("templatePath"),
     py::arg("colorRange"),
-    py::arg("expectedSize")=0);
+    py::arg("expectedSize")=-1);
 
   m.def("findShape",
     py::overload_cast<const cv::Mat&>(&Image::findShape),

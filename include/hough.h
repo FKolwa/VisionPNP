@@ -24,7 +24,7 @@ struct Rpoint2 {
 
 class Hough {
   public:
-    static float matchTemplate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const int expectedSize);
+    static std::vector<float> matchTemplate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const int expectedSize);
   private:
     // minimum and maximum width of scaled contour
     static int wmin;
@@ -46,12 +46,14 @@ class Hough {
     static cv::Mat accum;
     // The maximal width of the template
     static int wtemplate;
+    // The center point of the template
+    static int ctemplate[2];
 
     static void createRtable(const cv::Mat& templateImage);
     static void readPoints(const cv::Mat& original_img, const cv::Mat& template_img);
     static void readRtable();
     static void accumulate(const cv::Mat& searchImage);
-    static float bestCandidate(const cv::Mat& searchImage);
+    static std::vector<float> bestCandidate(const cv::Mat& searchImage);
 
     static inline int roundToInt(float num) {
       return (num > 0.0) ? (int)(num + 0.5f) : (int)(num - 0.5f);

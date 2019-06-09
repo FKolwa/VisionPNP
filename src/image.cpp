@@ -202,29 +202,52 @@ cv::Mat Image::removeColorRange(const cv::Mat& inputImage, const std::vector<std
 
   return workingCopy;
 }
-
+/*
 // Binarizes image based on color range
 cv::Mat Image::binaryFromRange(const cv::Mat& inputImage, const std::vector<std::vector<int>>& colorRange) {
-  // cv::Mat workingCopy(inputImage.rows, inputImage.cols, CV_8UC1, 0);
-  // cv::Mat workingCopy = cv::Mat::zeros(inputImage.rows, inputImage.cols, CV_8UC1);
-  cv::Mat black(inputImage.rows, inputImage.cols, CV_8UC1, 0);
-  // cv::Mat white(inputImage.rows, inputImage.cols, CV_8UC1, 255);
-  // cv::Mat workingCopy = inputImage.clone();
-  // workingCopy.create( cv::Size(inputImage.cols, inputImage.rows), CV_8UC3);
   cv::Mat imageHSV;
   cv::Mat mask;
+  cv::Mat inputImageCopy = inputImage.clone();
+  cv::cvtColor(inputImageCopy, inputImageCopy, cv::COLOR_BGR2GRAY);
 
   // apply retrived color range on image
   cv::cvtColor(inputImage, imageHSV, cv::COLOR_BGR2HSV);
   cv::inRange(imageHSV, colorRange[0], colorRange[1], mask);
-  //workingCopy.setTo(255, mask);
-  // inputImage.copyTo(workingCopy, mask);
-  black.setTo(255, mask);
-  //mask.copyTo(white, black);
-  cv::imwrite("./maskimage.png", black);
-  // workingCopy.setTo(0, mask);
+  cv::bitwise_or(inputImageCopy, mask, inputImageCopy);
+  // inputImageCopy.setTo(cv::Scalar(255,255,255), mask);
 
-  return black;
+  mask = 255 - mask;
+  inputImageCopy.setTo(cv::Scalar(0,0,0), mask);
+  cv::blur(inputImageCopy,inputImageCopy,cv::Size(6,6));
+
+  // // Use morphology to clean the image
+  // cv::Mat kernel = cv::Mat::ones( 8, 8, CV_32F );
+  // cv::morphologyEx( inputImageCopy, inputImageCopy, cv::MORPH_OPEN, kernel );
+  // cv::morphologyEx( inputImageCopy, inputImageCopy, cv::MORPH_CLOSE, kernel );
+  // cv::blur(inputImageCopy, inputImageCopy, cv::Size(6,6));
+
+  return inputImageCopy;
+} */
+
+// Binarizes image based on color range
+cv::Mat Image::binaryFromRange(const cv::Mat& inputImage, const std::vector<std::vector<int>>& colorRange) {
+  cv::Mat imageHSV;
+  cv::Mat mask;
+  cv::Mat binarizedImage = cv::Mat::zeros(inputImage.rows, inputImage.cols, CV_8UC1);
+
+  // apply retrived color range on image
+  cv::cvtColor(inputImage, imageHSV, cv::COLOR_BGR2HSV);
+  cv::inRange(imageHSV, colorRange[0], colorRange[1], mask);
+
+  binarizedImage.setTo(255, mask);
+
+  // Use morphology to clean the image
+  cv::Mat kernel = cv::Mat::ones( 8, 8, CV_32F );
+  cv::morphologyEx( binarizedImage, binarizedImage, cv::MORPH_OPEN, kernel );
+  cv::morphologyEx( binarizedImage, binarizedImage, cv::MORPH_CLOSE, kernel );
+  cv::blur(binarizedImage, binarizedImage, cv::Size(6,6));
+
+  return binarizedImage;
 }
 
 // Extracts areas within the provided color range and returns binarized mask containing these areas

@@ -46,7 +46,7 @@ cv2.imwrite('./OUTPUT_scenario_1B.png', croppedImage1B)
 # Clean green background
 cleanedBedCam = VisionPNP.binaryFromRange(bedCamImageFindShape, maskValues)
 
-# Find center of mass
+# # Find center of mass
 center = VisionPNP.findShape(cleanedBedCam)
 cv2.circle(bedCamImageFindShape,(center[0], center[1]), 4, (0,0,255), -1)
 cv2.imwrite('./OUTPUT_scenario_2.png', bedCamImageFindShape)
@@ -58,8 +58,12 @@ print(center)
 # Find a binary template inside a provided input image.
 # The maskValues contain the color range of the background color for easier seperation.
 # Return its orientation.
-searchImageCopy = cv2.imread("./resources/input1.png")
-templateImageCopy = cv2.imread("./resources/temp1.png")
+searchImageCopy = cv2.imread("./resources/led_on_gripper.png")
+preBinarized = cv2.imread("./resources/input1.png")
+templateImageCopy = cv2.imread("./resources/template_fake_resistor.png")
 
-orientation = VisionPNP.matchTemplate(searchImageCopy, templateImageCopy, maskValues)
-print(orientation)
+# Returns vector of x-position, y-position, width (in pixels) and rotation of the template found in the search image
+cleanedSearchImage = VisionPNP.binaryFromRange(searchImageCopy, maskValues)
+# cv2.imwrite('./cleanedImage.png', cleanedSearchImage)
+bestCandidate = VisionPNP.matchTemplate(searchImageCopy, templateImageCopy, maskValues, 60)
+print(bestCandidate)

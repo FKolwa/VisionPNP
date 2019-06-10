@@ -8,11 +8,13 @@ int Hough::wmin = 0;
 int Hough::wmax = 0;
 float Hough::phimin = -PI*0.25f;
 float Hough::phimax = PI*0.25f;
-int Hough::rangeXY = 1;
-int Hough::rangeS = 1;
-int Hough::intervals = 256;
+int Hough::rangeXY = 4;
+int Hough::rangeS = 4;
+int Hough::intervals = 64;
 int Hough::wtemplate = 0;
 int Hough::ctemplate[2] = {0, 0};
+int Hough::imageSize = 400;
+bool Hough::DEBUG = true;
 
 // save file with canny edge of the original image
 void Hough::createRtable(const cv::Mat& templateImage){
@@ -151,13 +153,6 @@ void Hough::accumulate(const cv::Mat& searchImage){
 // return the best candidate detected in image
 std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage){
   static std::vector<float> bestCandidate;
-  cv::Mat showImage;
-  // Convert showImage if necessary
-  if(searchImage.type() < 6) {
-    cv::cvtColor(searchImage, showImage, cv::COLOR_GRAY2BGR);
-  } else {
-    showImage = searchImage.clone();
-  }
 
   double minval;
   double maxval;
@@ -165,52 +160,22 @@ std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage){
   int id_max[4] = { 0, 0, 0, 0};
   cv::minMaxIdx(accum, &minval, &maxval, id_min, id_max);
 
-  int nl= showImage.rows;
-  int nc= showImage.cols;
-
   cv::Vec2i referenceP = cv::Vec2i(id_max[0]*rangeXY+(rangeXY+1)/2, id_max[1]*rangeXY+(rangeXY+1)/2);
 
-  // std::cout << "Position: " << id_max[0]*rangeXY+(rangeXY+1)/2 << " - "<< id_max[1]*rangeXY+(rangeXY+1)/2 << std::endl;
-
   // rotate and scale points all at once. Then impress them on image
-  // std::vector<std::vector<Vec2i>> Rtablerotatedscaled(intervals);
   float deltaphi = PI/intervals;
   int r0 = -floor(phimin/deltaphi);
   int reff = id_max[3]-r0;
   float angle = reff*deltaphi;
-  float cs = cos(angle);
-  float sn = sin(angle);
   int size = wmin + id_max[2]*rangeS;
-  float wratio = (float)size/(wtemplate);
-
-  // Draw candidate in output image
-  for (std::vector<std::vector<cv::Vec2i>>::size_type ii = 0; ii < Rtable.size(); ++ii){
-    for (std::vector<cv::Vec2i>::size_type jj= 0; jj < Rtable[ii].size(); ++jj){
-      int dx = roundToInt(wratio*(cs*Rtable[ii][jj][0] - sn*Rtable[ii][jj][1]));
-      int dy = roundToInt(wratio*(sn*Rtable[ii][jj][0] + cs*Rtable[ii][jj][1]));
-      int x = referenceP[0] - dx;
-      int y = referenceP[1] - dy;
-      if ( (x<nc)&&(y<nl)&&(x>-1)&&(y>-1) ){
-        showImage.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 0, 255);
-      }
-    }
-  }
-
-  // Draw center point
-  int dx = roundToInt(wratio*(cs*Hough::ctemplate[0] - sn*Hough::ctemplate[1]));
-  int dy = roundToInt(wratio*(sn*Hough::ctemplate[0] + cs*Hough::ctemplate[1]));
-  int x = dx;
-  int y = dy;
-  if ( (x<nc)&&(y<nl)&&(x>-1)&&(y>-1) ){
-    showImage.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 0, 255);
-  }
 
   // debug output
-  std::cout << "Objects found: " << accum.size() << std::endl;
-  std::cout << "Rotation in radians: " << angle << std::endl;
-  std::cout << "Position: " << x << " " << y << std::endl;
-  std::cout << "Scale: " << size << std::endl;
-  cv::imwrite("./result.png", showImage);
+  if (DEBUG) {
+    std::cout << "Objects found: " << accum.size() << std::endl;
+    std::cout << "Rotation in radians: " << angle << std::endl;
+    std::cout << "Position: " << referenceP[0] << " " << referenceP[1] << std::endl;
+    std::cout << "Scale: " << size << std::endl;
+  }
 
   // assemble return value
   bestCandidate.push_back(referenceP[0]);
@@ -219,6 +184,39 @@ std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage){
   bestCandidate.push_back(angle);
 
   return bestCandidate;
+}
+
+cv::Mat Hough::drawCandidate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<float> candidate) {
+  cv::Mat searchImageCopy = searchImage.clone();
+  cv::Mat templateImageCopy = templateImage.clone();
+  float scaleFactor = searchImageCopy.rows / imageSize;
+
+  // create the Rtable from template
+  // cv::resize(templateImageCopy, templateImageCopy, cv::Size(imageSize,imageSize));
+  createRtable(templateImageCopy);
+
+  int nl= searchImageCopy.rows;
+  int nc= searchImageCopy.cols;
+  float angle = candidate[3];
+  float cs = cos(angle);
+  float sn = sin(angle);
+  int size = candidate[2] * scaleFactor;
+  float wratio = (float)size/(wtemplate);
+
+
+  // Draw candidate in output image
+  for (std::vector<std::vector<cv::Vec2i>>::size_type ii = 0; ii < Rtable.size(); ++ii){
+    for (std::vector<cv::Vec2i>::size_type jj= 0; jj < Rtable[ii].size(); ++jj){
+      int dx = roundToInt(wratio*(cs*Rtable[ii][jj][0] - sn*Rtable[ii][jj][1]));
+      int dy = roundToInt(wratio*(sn*Rtable[ii][jj][0] + cs*Rtable[ii][jj][1]));
+      int x = (candidate[0] * scaleFactor) - dx;
+      int y = (candidate[1] * scaleFactor) - dy;
+      if ( (x<nc)&&(y<nl)&&(x>-1)&&(y>-1) ){
+        cv::circle(searchImageCopy, cv::Point(x,y), 2, cv::Scalar(0, 0, 255), -1);        
+      }
+    }
+  }
+  return searchImageCopy;
 }
 
 // load vector pts with all points from the contour
@@ -302,23 +300,22 @@ std::vector<float> Hough::matchTemplate(const cv::Mat& searchImage, const cv::Ma
   if(searchImageCopy.type() > 6) {
     searchImageCopy = Image::binaryFromRange(searchImageCopy, colorRange);
   }
-  cv::resize(searchImageCopy, searchImageCopy, cv::Size(200,200));
-  cv::resize(templateImageCopy, templateImageCopy, cv::Size(200,200));
+  cv::resize(searchImageCopy, searchImageCopy, cv::Size(imageSize,imageSize));
+  cv::resize(templateImageCopy, templateImageCopy, cv::Size(imageSize,imageSize));
   Hough::wmin = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) / 2 : expectedSize-(expectedSize*0.1);
   Hough::wmax = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) : expectedSize+(expectedSize*0.1);
 
-  std::cout << "createRTable" << std::endl;
   // create the Rtable from template
   createRtable(templateImageCopy);
 
-  std::cout << "accumulate" << std::endl;
   // match template with search image
   accumulate(searchImageCopy);
 
   // Find best candidate and return orientation
   cv::Mat displayCopy = searchImage.clone();
-  cv::resize(displayCopy, displayCopy, cv::Size(200, 200));
+  cv::resize(displayCopy, displayCopy, cv::Size(imageSize, imageSize));
   return bestCandidate(displayCopy);
+  // drawCandidate(searchImage, templateImage, candidate);
 }
 
 

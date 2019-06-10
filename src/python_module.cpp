@@ -173,6 +173,12 @@ void initPythonBindings(py::module& m) {
     py::arg("colorRange"),
     py::arg("expectedSize")=-1);
 
+  m.def("drawCandidate", &Hough::drawCandidate,
+    "Draws and returns supplied candidate based on search and template image.",
+    py::arg("searchImage"),
+    py::arg("templateImage"),
+    py::arg("candidate"));
+
   m.def("findShape",
     py::overload_cast<const cv::Mat&>(&Image::findShape),
     "Detects arbitrary shape in provided search image.",

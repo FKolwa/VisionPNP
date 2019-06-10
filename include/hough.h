@@ -25,6 +25,7 @@ struct Rpoint2 {
 class Hough {
   public:
     static std::vector<float> matchTemplate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const int expectedSize);
+    static cv::Mat drawCandidate(const cv::Mat& searchImage, const cv::Mat& templateImage,  const std::vector<float> candidate);
   private:
     // minimum and maximum width of scaled contour
     static int wmin;
@@ -48,6 +49,10 @@ class Hough {
     static int wtemplate;
     // The center point of the template
     static int ctemplate[2];
+    // Standard image dimensions to resize the working image
+    static int imageSize;
+    // Debug flag
+    static bool DEBUG;
 
     static void createRtable(const cv::Mat& templateImage);
     static void readPoints(const cv::Mat& original_img, const cv::Mat& template_img);

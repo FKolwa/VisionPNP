@@ -224,7 +224,7 @@ void initPythonBindings(py::module& m) {
 PYBIND11_PLUGIN(VisionPNP) {
   py::module m("VisionPNP", "python plugin for cv pick and place automation");
   initPythonBindings(m);
-  return m.ptr;
+  return m.ptr();
 }
 #else
 PYBIND11_MODULE(VisionPNP, m) {

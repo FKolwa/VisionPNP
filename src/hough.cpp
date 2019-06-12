@@ -152,7 +152,7 @@ void Hough::accumulate(const cv::Mat& searchImage){
 
 // return the best candidate detected in image
 std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage){
-  static std::vector<float> bestCandidate;
+  std::vector<float> best;
 
   double minval;
   double maxval;
@@ -178,12 +178,12 @@ std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage){
   }
 
   // assemble return value
-  bestCandidate.push_back(referenceP[0]);
-  bestCandidate.push_back(referenceP[1]);
-  bestCandidate.push_back(size);
-  bestCandidate.push_back(angle);
+  best.push_back(referenceP[0]);
+  best.push_back(referenceP[1]);
+  best.push_back(size);
+  best.push_back(angle);
 
-  return bestCandidate;
+  return best;
 }
 
 cv::Mat Hough::drawCandidate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<float> candidate) {
@@ -212,7 +212,7 @@ cv::Mat Hough::drawCandidate(const cv::Mat& searchImage, const cv::Mat& template
       int x = (candidate[0] * scaleFactor) - dx;
       int y = (candidate[1] * scaleFactor) - dy;
       if ( (x<nc)&&(y<nl)&&(x>-1)&&(y>-1) ){
-        cv::circle(searchImageCopy, cv::Point(x,y), 2, cv::Scalar(0, 0, 255), -1);        
+        cv::circle(searchImageCopy, cv::Point(x,y), 2, cv::Scalar(0, 0, 255), -1);
       }
     }
   }
@@ -242,10 +242,10 @@ void Hough::readPoints(const cv::Mat& original_img, const cv::Mat& contour_img){
   // get Scharr matrices from original template image to obtain contour gradients
   cv::Mat dx;
   dx.create(cv::Size(original_img.cols, original_img.rows), CV_16SC1);
-  cv::Sobel(input_img_gray, dx, CV_16S, 1, 0, cv::FILTER_SCHARR);
+  cv::Sobel(input_img_gray, dx, CV_16S, 1, 0, CV_SCHARR);
   cv::Mat dy;
   dy.create(cv::Size(original_img.cols, original_img.rows), CV_16SC1);
-  cv::Sobel(input_img_gray, dy, CV_16S, 0, 1, cv::FILTER_SCHARR);
+  cv::Sobel(input_img_gray, dy, CV_16S, 0, 1, CV_SCHARR);
   // load points on vector
   pts.clear();
   int mindx = INT_MAX;

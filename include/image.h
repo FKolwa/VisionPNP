@@ -13,8 +13,8 @@
 
 class Image {
   public:
-    static float matchTemplate(const std::string& pathToSearchImage, const std::string& pathToTemplateImage, const std::vector<std::vector<int>>& colorRange, const std::string& configPath);
-    static float matchTemplate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const std::string& configPath);
+    // static float matchTemplate(const std::string& pathToSearchImage, const std::string& pathToTemplateImage, const std::vector<std::vector<int>>& colorRange, const std::string& configPath);
+    // static float matchTemplate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<std::vector<int>>& colorRange, const std::string& configPath);
     static std::vector<int> findShape(const std::string& pathToImage);
     static std::vector<int> findShape(const cv::Mat& searchImage);
     static cv::Mat removeColorRange(const cv::Mat& inputImage, const std::vector<std::vector<int>>& colorRange);

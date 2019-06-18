@@ -189,7 +189,8 @@ std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage){
 cv::Mat Hough::drawCandidate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<float> candidate) {
   cv::Mat searchImageCopy = searchImage.clone();
   cv::Mat templateImageCopy = templateImage.clone();
-  float scaleFactor = searchImageCopy.rows / imageSize;
+  float scaleFactor = float(searchImageCopy.rows) / float(imageSize);
+  // float scaleFactor = float(imageSize) / float(searchImageCopy.rows);
 
   // create the Rtable from template
   // cv::resize(templateImageCopy, templateImageCopy, cv::Size(imageSize,imageSize));
@@ -293,8 +294,12 @@ std::vector<float> Hough::matchTemplate(const cv::Mat& searchImage, const cv::Ma
   // Create a workcopy
   cv::Mat searchImageCopy = searchImage.clone();
   cv::Mat templateImageCopy = templateImage.clone();
-  float scaleFactor = searchImageCopy.rows / imageSize;
-  int expectedSizeScaled = expectedSize * scaleFactor;
+  std::cout<<std::cout.precision();
+  std::cout << "Inout image dimensions: " << searchImageCopy.rows << std::endl;
+  std::cout << "imageSize: " << imageSize << std::endl;
+  float scaleFactor = float(imageSize) / float(searchImageCopy.rows);
+  int expectedSizeScaled = scaleFactor > 0.0 ? expectedSize * scaleFactor : expectedSize;
+  std::cout << "Scalefactor: " <<  scaleFactor << std::endl;
   std::cout << "Expected size: " <<  expectedSizeScaled << std::endl;
 
   // In case the input image is already binarized
@@ -303,8 +308,8 @@ std::vector<float> Hough::matchTemplate(const cv::Mat& searchImage, const cv::Ma
   }
   cv::resize(searchImageCopy, searchImageCopy, cv::Size(imageSize,imageSize));
   cv::resize(templateImageCopy, templateImageCopy, cv::Size(imageSize,imageSize));
-  Hough::wmin = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) / 2 : expectedSizeScaled-(expectedSizeScaled*0.1);
-  Hough::wmax = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) : expectedSizeScaled+(expectedSizeScaled*0.1);
+  Hough::wmin = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) / 2 : expectedSizeScaled*0.9;
+  Hough::wmax = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) : expectedSizeScaled*1.1;
 
   // create the Rtable from template
   createRtable(templateImageCopy);

@@ -64,7 +64,7 @@ templateImageCopy = cv2.imread("./resources/template_output.png")
 # Returns vector of x-position, y-position, width (in pixels) and rotation of the template found in the search image
 cleanedSearchImage = VisionPNP.binaryFromRange(searchImageCopy, maskValues)
 # cv2.imwrite('./cleanedImage.png', cleanedSearchImage)
-bestCandidate = VisionPNP.matchTemplate(searchImageCopy, templateImageCopy, maskValues, 200)
+bestCandidate = VisionPNP.matchTemplate(searchImageCopy, templateImageCopy, maskValues, 93)
 candidateImage = VisionPNP.drawCandidate(searchImageCopy, templateImageCopy, bestCandidate)
 cv2.imwrite("./OUTPUT_scenario_3.png", candidateImage)
 print(bestCandidate)

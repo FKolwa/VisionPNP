@@ -293,8 +293,9 @@ std::vector<float> Hough::matchTemplate(const cv::Mat& searchImage, const cv::Ma
   // Create a workcopy
   cv::Mat searchImageCopy = searchImage.clone();
   cv::Mat templateImageCopy = templateImage.clone();
-
-  // Set size of anticipated template in search image including small offset
+  float scaleFactor = searchImageCopy.rows / imageSize;
+  int expectedSizeScaled = expectedSize * scaleFactor;
+  std::cout << "Expected size: " <<  expectedSizeScaled << std::endl;
 
   // In case the input image is already binarized
   if(searchImageCopy.type() > 6) {
@@ -302,8 +303,8 @@ std::vector<float> Hough::matchTemplate(const cv::Mat& searchImage, const cv::Ma
   }
   cv::resize(searchImageCopy, searchImageCopy, cv::Size(imageSize,imageSize));
   cv::resize(templateImageCopy, templateImageCopy, cv::Size(imageSize,imageSize));
-  Hough::wmin = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) / 2 : expectedSize-(expectedSize*0.1);
-  Hough::wmax = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) : expectedSize+(expectedSize*0.1);
+  Hough::wmin = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) / 2 : expectedSizeScaled-(expectedSizeScaled*0.1);
+  Hough::wmax = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) : expectedSizeScaled+(expectedSizeScaled*0.1);
 
   // create the Rtable from template
   createRtable(templateImageCopy);

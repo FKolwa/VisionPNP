@@ -243,10 +243,12 @@ void Hough::readPoints(const cv::Mat& original_img, const cv::Mat& contour_img){
   // get Scharr matrices from original template image to obtain contour gradients
   cv::Mat dx;
   dx.create(cv::Size(original_img.cols, original_img.rows), CV_16SC1);
-  cv::Sobel(input_img_gray, dx, CV_16S, 1, 0, CV_SCHARR);
+  // cv::Sobel(input_img_gray, dx, CV_16S, 1, 0, cv::FILTER_SCHARR);
+  cv::Scharr(input_img_gray, dx, CV_16S, 1, 0);
   cv::Mat dy;
   dy.create(cv::Size(original_img.cols, original_img.rows), CV_16SC1);
-  cv::Sobel(input_img_gray, dy, CV_16S, 0, 1, CV_SCHARR);
+  // cv::Sobel(input_img_gray, dy, CV_16S, 0, 1, cv::FILTER_SCHARR);
+  cv::Scharr(input_img_gray, dy, CV_16S, 0, 1);
   // load points on vector
   pts.clear();
   int mindx = INT_MAX;

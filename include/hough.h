@@ -58,7 +58,7 @@ class Hough {
     static void readPoints(const cv::Mat& original_img, const cv::Mat& template_img);
     static void readRtable();
     static void accumulate(const cv::Mat& searchImage);
-    static std::vector<float> bestCandidate(const cv::Mat& searchImage);
+    static std::vector<float> bestCandidate(const cv::Mat& searchImage, const cv::Vec2i& originalDimensions);
 
     static inline int roundToInt(float num) {
       return (num > 0.0) ? (int)(num + 0.5f) : (int)(num - 0.5f);

@@ -151,7 +151,7 @@ void Hough::accumulate(const cv::Mat& searchImage){
 }
 
 // return the best candidate detected in image
-std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage){
+std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage, const cv::Vec2i& originalDimensions){
   std::vector<float> best;
 
   double minval;
@@ -160,28 +160,41 @@ std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage){
   int id_max[4] = { 0, 0, 0, 0};
   cv::minMaxIdx(accum, &minval, &maxval, id_min, id_max);
 
-  cv::Vec2i referenceP = cv::Vec2i(id_max[0]*rangeXY+(rangeXY+1)/2, id_max[1]*rangeXY+(rangeXY+1)/2);
-
-  // rotate and scale points all at once. Then impress them on image
+  // Calculate values for position, rotation and size
   float deltaphi = PI/intervals;
+  float resize = float(originalDimensions(0)) / float(Hough::imageSize);
   int r0 = -floor(phimin/deltaphi);
   int reff = id_max[3]-r0;
   float angle = reff*deltaphi;
-  int size = wmin + id_max[2]*rangeS;
+  float cs = cos(angle);
+  float sn = sin(angle);
+  int size = (wmin + id_max[2]*rangeS) * resize;
+  float wratio = (float)size/(wtemplate);
+  cv::Vec2i referenceP = cv::Vec2i((id_max[0]*rangeXY+(rangeXY+1)/2) * resize, (id_max[1]*rangeXY+(rangeXY+1)/2) * resize);
+
+
+  // Calculate position (center)
+  int dx = roundToInt(wratio*(cs*Hough::ctemplate[0] - sn*Hough::ctemplate[1]));
+  int dy = roundToInt(wratio*(sn*Hough::ctemplate[0] + cs*Hough::ctemplate[1]));
+  int x = referenceP[0] - dx;
+  int y = referenceP[1] - dy;
 
   // debug output
   if (DEBUG) {
     std::cout << "Objects found: " << accum.size() << std::endl;
     std::cout << "Rotation in radians: " << angle << std::endl;
-    std::cout << "Position: " << referenceP[0] << " " << referenceP[1] << std::endl;
+    std::cout << "Position (center): " << x << " " << y << std::endl;
     std::cout << "Scale: " << size << std::endl;
+    std::cout << "Reference Point: " << referenceP[0] << " " << referenceP[1] << std::endl;
   }
 
   // assemble return value
-  best.push_back(referenceP[0]);
-  best.push_back(referenceP[1]);
+  best.push_back(x);
+  best.push_back(y);
   best.push_back(size);
   best.push_back(angle);
+  best.push_back(referenceP[0]);
+  best.push_back(referenceP[1]);
 
   return best;
 }
@@ -189,11 +202,8 @@ std::vector<float> Hough::bestCandidate(const cv::Mat& searchImage){
 cv::Mat Hough::drawCandidate(const cv::Mat& searchImage, const cv::Mat& templateImage, const std::vector<float> candidate) {
   cv::Mat searchImageCopy = searchImage.clone();
   cv::Mat templateImageCopy = templateImage.clone();
-  float scaleFactor = float(searchImageCopy.rows) / float(imageSize);
-  // float scaleFactor = float(imageSize) / float(searchImageCopy.rows);
 
   // create the Rtable from template
-  // cv::resize(templateImageCopy, templateImageCopy, cv::Size(imageSize,imageSize));
   createRtable(templateImageCopy);
 
   int nl= searchImageCopy.rows;
@@ -201,8 +211,10 @@ cv::Mat Hough::drawCandidate(const cv::Mat& searchImage, const cv::Mat& template
   float angle = candidate[3];
   float cs = cos(angle);
   float sn = sin(angle);
-  int size = candidate[2] * scaleFactor;
+  int size = candidate[2];
   float wratio = (float)size/(wtemplate);
+  int cX = candidate[0];
+  int cY = candidate[1];
 
 
   // Draw candidate in output image
@@ -210,13 +222,19 @@ cv::Mat Hough::drawCandidate(const cv::Mat& searchImage, const cv::Mat& template
     for (std::vector<cv::Vec2i>::size_type jj= 0; jj < Rtable[ii].size(); ++jj){
       int dx = roundToInt(wratio*(cs*Rtable[ii][jj][0] - sn*Rtable[ii][jj][1]));
       int dy = roundToInt(wratio*(sn*Rtable[ii][jj][0] + cs*Rtable[ii][jj][1]));
-      int x = (candidate[0] * scaleFactor) - dx;
-      int y = (candidate[1] * scaleFactor) - dy;
+      int x = candidate[4] - dx;
+      int y = candidate[5] - dy;
       if ( (x<nc)&&(y<nl)&&(x>-1)&&(y>-1) ){
         cv::circle(searchImageCopy, cv::Point(x,y), 2, cv::Scalar(0, 0, 255), -1);
       }
     }
   }
+
+  // Draw center
+  if ( (cX<nc)&&(cY<nl)&&(cX>-1)&&(cY>-1) ){
+    cv::circle(searchImageCopy, cv::Point(cX,cY), 4, cv::Scalar(0, 0, 255), -1);
+  }
+
   return searchImageCopy;
 }
 
@@ -237,8 +255,6 @@ void Hough::readPoints(const cv::Mat& original_img, const cv::Mat& contour_img){
   int nl= original_img.rows;
   int nc= original_img.cols;
   cv::Vec2i refPoint = cv::Vec2i(0,0);
-  Hough::ctemplate[0] = int(nc/2);
-  Hough::ctemplate[1] = int(nl/2);
 
   // get Scharr matrices from original template image to obtain contour gradients
   cv::Mat dx;
@@ -273,6 +289,10 @@ void Hough::readPoints(const cv::Mat& original_img, const cv::Mat& contour_img){
       }
     }
   }
+
+  // Get center point
+  Hough::ctemplate[0] = int(refPoint(0)-contour_img.cols/2);
+  Hough::ctemplate[1] = int(refPoint(1)-contour_img.rows/2);
   // maximum width of the contour
   wtemplate = maxdx-mindx+1;
 }
@@ -320,10 +340,8 @@ std::vector<float> Hough::matchTemplate(const cv::Mat& searchImage, const cv::Ma
   accumulate(searchImageCopy);
 
   // Find best candidate and return orientation
-  cv::Mat displayCopy = searchImage.clone();
-  cv::resize(displayCopy, displayCopy, cv::Size(imageSize, imageSize));
-  return bestCandidate(displayCopy);
-  // drawCandidate(searchImage, templateImage, candidate);
+  cv::Vec2i originalDimensions = cv::Vec2i(searchImage.cols,searchImage.rows);
+  return bestCandidate(searchImageCopy, originalDimensions);
 }
 
 

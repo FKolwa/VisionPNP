@@ -6,8 +6,8 @@ std::vector<Rpoint> Hough::pts;
 cv::Mat Hough::accum;
 int Hough::wmin = 0;
 int Hough::wmax = 0;
-float Hough::phimin = -PI*0.25f;
-float Hough::phimax = PI*0.25f;
+float Hough::phimin = -PI*0.5f;
+float Hough::phimax = PI*0.5f;
 int Hough::rangeXY = 4;
 int Hough::rangeS = 4;
 int Hough::intervals = 64;
@@ -232,7 +232,7 @@ cv::Mat Hough::drawCandidate(const cv::Mat& searchImage, const cv::Mat& template
 
   // Draw center
   if ( (cX<nc)&&(cY<nl)&&(cX>-1)&&(cY>-1) ){
-    cv::circle(searchImageCopy, cv::Point(cX,cY), 4, cv::Scalar(0, 0, 255), -1);
+    cv::circle(searchImageCopy, cv::Point(cX,cY), 8, cv::Scalar(0, 0, 255), -1);
   }
 
   return searchImageCopy;
@@ -330,8 +330,8 @@ std::vector<float> Hough::matchTemplate(const cv::Mat& searchImage, const cv::Ma
   }
   cv::resize(searchImageCopy, searchImageCopy, cv::Size(imageSize,imageSize));
   cv::resize(templateImageCopy, templateImageCopy, cv::Size(imageSize,imageSize));
-  Hough::wmin = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) / 2 : expectedSizeScaled*0.9;
-  Hough::wmax = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) : expectedSizeScaled*1.1;
+  Hough::wmin = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) / 2 : expectedSizeScaled*0.95;
+  Hough::wmax = expectedSize == -1 ? std::min(searchImageCopy.cols, searchImageCopy.rows) : expectedSizeScaled*1.05;
 
   // create the Rtable from template
   createRtable(templateImageCopy);

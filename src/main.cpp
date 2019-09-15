@@ -6,7 +6,7 @@ using namespace cv;
 
 int main(int argc, const char* argv[])
 {
-  // TODO: UPDATE!!
+  // TODO: Function calls have changed and need to be updated.
   //-- BEGIN Gripper part - uncomment to run:
   // vector <vector<int>> thresh;
   // thresh = Color::getHSVColorRange("../resources/gripper.png");

@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "json.h"
 
 #ifndef OPENCV_H
 #define OPENCV_H

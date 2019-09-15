@@ -1,5 +1,16 @@
 #include "../include/hough.h"
 
+/*
+Disclaimer: The following Generalized Hough Transform implementation is based
+upon the great article / code formerly hosted on
+http://www.itriacasa.it/generalized-hough-transform/ and has been released under
+his selfmade YCDWYWJPPBLTW* license. The site has been taken down in mid of 2019
+and is only accessable in parts under:
+https://web.archive.org/web/20190211055013/http://www.itriacasa.it/generalized-hough-transform/default.html
+(last accessed 15.09.2019).
+(*) You Can Do Whatever You Want Just Please Provide a Back Link to This Webpage
+*/
+
 // Initialize with defaults
 std::vector<std::vector<cv::Vec2i>> Hough::Rtable;
 std::vector<Rpoint> Hough::pts;
@@ -83,10 +94,10 @@ void Hough::accumulate(const cv::Mat& searchImage){
         Rpoint2 rpt;
         rpt.x = i*inv_rangeXY;
         rpt.y = j*inv_rangeXY;
-        float a = atan2((float)vy, (float)vx);              //	gradient angle in radians
-        float phi = ((a > 0) ? a-PI_half : a+PI_half);      // contour angle with respect to x axis
-        int angleindex = (int)((phi+PI*0.5f)*inv_deltaphi); // index associated with angle (0 index = -90 degrees)
-        if (angleindex == intervals) angleindex=intervals-1;// -90�angle and +90� has same effect
+        float a = atan2((float)vy, (float)vx);
+        float phi = ((a > 0) ? a-PI_half : a+PI_half);
+        int angleindex = (int)((phi+PI*0.5f)*inv_deltaphi);
+        if (angleindex == intervals) angleindex=intervals-1;
         rpt.phiindex = angleindex;
         pts2.push_back( rpt );
       }
